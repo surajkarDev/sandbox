@@ -1,0 +1,23 @@
+{
+  "userDetail": [
+    {
+      "id": "7008",
+      "username": "suraj",
+      "email": "surajkar104@gmail.com",
+      "password": "Suraj104@",
+      "confirmPassword": "Suraj104@"
+    },
+    {
+      "id": "3ef7",
+      "username": "sanjib",
+      "email": "sanjib@gmail.com",
+      "password": "$2b$10$eI2M8MRu7TL/P4BU2gRXi.LjV7sPQoiIfH/xH2sx9CFNLepFP1Jr2"
+    },
+    {
+      "id": "fef1",
+      "username": "suraj",
+      "email": "suraj@gmail.com",
+      "password": "$2b$10$Cryw5Hk5vMCcybT/1cH71OaCIxSdXtID.8DcF6X5Hke3mnJQsS.NS"
+    }
+  ]
+}

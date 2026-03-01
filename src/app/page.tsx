@@ -1,65 +1,292 @@
+"use client";
 import Image from "next/image";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import bcrypt from "bcryptjs";
+import SignupFrom from "./components/SignupFrom/page";
+import LoginFrom from "./components/LoginForm/page";
 
-export default function Home() {
+interface SignupData {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+interface LoginData {
+  username: string;
+  password: string;
+}
+interface LoginError {
+  userError: string;
+  passwordError: string;
+}
+interface SignupError {
+  userError: string;
+  emailError: string;
+  confirmPasswordError: string;
+  passwordError: string;
+}
+
+function Home() {
+  const [login, setLogin] = useState<LoginData>({ username: "", password: "" });
+  const [signup, setSignup] = useState<SignupData>({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const [error, setError] = useState<LoginError>({
+    userError: "",
+    passwordError: "",
+  });
+
+  const [errorSignup, setErrorSignup] = useState<SignupError>({
+    userError: "",
+    emailError: "",
+    passwordError: "",
+    confirmPasswordError: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [loginSignup, setLoginSignup] = useState(false);
+  const router = useRouter();
+
+  // ---------------- CHANGE HANDLERS ----------------
+  const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setLogin((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSignupChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSignup((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // ---------------- VALIDATION ----------------
+  const validate = (): boolean => {
+    if (loginSignup) {
+      const newErrors: SignupError = {
+        userError: "",
+        emailError: "",
+        passwordError: "",
+        confirmPasswordError: "",
+      };
+
+      if (!signup.username.trim()) newErrors.userError = "Username is required";
+
+      if (!signup.email.trim()) {
+        newErrors.emailError = "Email is required";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signup.email)) {
+        newErrors.emailError = "Invalid email address";
+      }
+
+      if (!signup.password.trim()) {
+        newErrors.passwordError = "Password is required";
+      } else if (signup.password.length < 8) {
+        newErrors.passwordError = "Password must be at least 8 characters";
+      } else if (
+        !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(signup.password)
+      ) {
+        newErrors.passwordError =
+          "Password must include uppercase, lowercase, number, special character";
+      }
+
+      if (!signup.confirmPassword.trim()) {
+        newErrors.confirmPasswordError = "Confirm password is required";
+      } else if (signup.password !== signup.confirmPassword) {
+        newErrors.confirmPasswordError = "Passwords do not match";
+      }
+
+      setErrorSignup(newErrors);
+      return !Object.values(newErrors).some((e) => e);
+    } else {
+      const newErrors: LoginError = { userError: "", passwordError: "" };
+
+      if (!login.username.trim()) {
+        newErrors.userError = "Email is required";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(login.username)) {
+        newErrors.userError = "Invalid email";
+      }
+
+      if (!login.password.trim()) {
+        newErrors.passwordError = "Password is required";
+      }
+
+      setError(newErrors);
+      return !Object.values(newErrors).some((e) => e);
+    }
+  };
+
+  // ---------------- SIGNUP ----------------
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    setLoading(true);
+
+    try {
+      // check duplicate email
+      const check = await fetch(
+        `http://localhost:3001/userDetail?email=${signup.email}`
+      );
+      const existing = await check.json();
+
+      if (existing.length > 0) {
+        setErrorSignup((prev) => ({
+          ...prev,
+          emailError: "Email already registered",
+        }));
+        setLoading(false);
+        return;
+      }
+
+      // hash password
+      const hashedPassword = await bcrypt.hash(signup.password, 10);
+
+      await fetch("http://localhost:3001/userDetail", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: signup.username,
+          email: signup.email,
+          password: hashedPassword,
+        }),
+      });
+
+      alert("Signup successful");
+      setLoginSignup(false);
+    } catch (err) {
+      console.error("Signup error", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ---------------- LOGIN ----------------
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    setLoading(true);
+    console.log("Attempting login with", login);
+    
+    try {
+      const response = await fetch(
+        `http://localhost:3001/userDetail?email=${login.username}`
+      );
+      const users = await response.json();
+
+      if (users.length === 0) {
+        setError({ userError: "User not found", passwordError: "" });
+        setLoading(false);
+        return;
+      }
+
+      const user = users[0];
+      console.log("login.password",login.password);
+      console.log("user.password",user.password);
+      
+      const match = await bcrypt.compare(login.password, user.password);
+      console.log("match",match);
+      
+
+      if (!match) {
+        setError({ userError: "", passwordError: "Incorrect password" });
+        setLoading(false);
+        return;
+      }
+
+      router.push("/pages/dashboard");
+    } catch (err) {
+      console.error("Login error", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ---------------- TOGGLE ----------------
+  const toggleMode = () => {
+    setLoginSignup(!loginSignup);
+    setError({ userError: "", passwordError: "" });
+    setErrorSignup({
+      userError: "",
+      emailError: "",
+      passwordError: "",
+      confirmPasswordError: "",
+    });
+  };
+
+  // ---------------- UI ----------------
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="container mx-auto px-0 py-0">
+      <div className="flex flex-wrap">
+        <div className="w-full lg:w-1/2">
+          <Image
+            src="/img/snadbox.jpg"
+            alt="Sandbox"
+            width={800}
+            height={600}
+            className="w-full h-screen object-cover"
+          />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+
+        <div className="w-full lg:w-1/2 flex items-center justify-center">
+          <div className="w-[400px]">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+              src="/img/logo.svg"
+              alt="Logo"
+              width={250}
+              height={120}
+              className="object-contain mx-auto"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+            <h2 className="text-center mt-4 font-bold">
+              UAT NDC SANDBOX {loginSignup ? "SIGNUP" : "LOGIN"}
+            </h2>
+            
+            {loginSignup ? (
+              <>
+              <SignupFrom  handleSignup={handleSignup} signup={signup} errorSignup={errorSignup} handleSignupChange={handleSignupChange} loading={loading}/>
+              </>
+            ) : (
+              <>
+              <LoginFrom login={login} error={error} handleLogin={handleLogin} handleLoginChange={handleLoginChange} loading={loading} />
+              </>
+              
+            )}
+
+            <div className="text-right mt-3">
+              <button onClick={toggleMode} className="underline text-sm">
+                {loginSignup ? "Back to Login" : "Go for Signup"}
+              </button>
+            </div>
+          </div>
         </div>
-      </main>
+      </div>
+
+      {/* simple styles */}
+      <style jsx>{`
+        .input {
+          border: 1px solid #d1d5db;
+          border-radius: 6px;
+          padding: 10px;
+          margin-top: 10px;
+        }
+        .btn {
+          margin-top: 16px;
+          background: #2563eb;
+          color: white;
+          padding: 10px;
+          border-radius: 6px;
+        }
+        .error {
+          color: #dc2626;
+          font-size: 12px;
+        }
+      `}</style>
     </div>
   );
 }
+
+export default Home;
