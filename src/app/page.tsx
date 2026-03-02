@@ -264,27 +264,6 @@ function Home() {
           </div>
         </div>
       </div>
-
-      {/* simple styles */}
-      <style jsx>{`
-        .input {
-          border: 1px solid #d1d5db;
-          border-radius: 6px;
-          padding: 10px;
-          margin-top: 10px;
-        }
-        .btn {
-          margin-top: 16px;
-          background: #2563eb;
-          color: white;
-          padding: 10px;
-          border-radius: 6px;
-        }
-        .error {
-          color: #dc2626;
-          font-size: 12px;
-        }
-      `}</style>
     </div>
   );
 }
