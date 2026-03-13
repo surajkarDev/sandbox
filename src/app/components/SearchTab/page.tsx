@@ -1,5 +1,6 @@
 'use client';
 import React from "react";
+import SearchForm from "../SearchForm/page";
 
 type Props = {
     flightTab: boolean;
@@ -19,7 +20,7 @@ const SearchTab = ({ flightTab, setFlightTab }: Props) => {
                     flightTab ? 
                     <>
                       <div className="border border-gray-300 p-4">
-                        flight search form
+                        <SearchForm />
                       </div>
                     </> 
                     :
