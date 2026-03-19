@@ -8,7 +8,7 @@ interface SearchData {
 }
 
 const SearchForm = () => {
-  const  [token,setTokan] = useState<string>('eyJraWQiOiJFa0I1SkxyV0R3R0NpV2xvWHl6dEVVUCtqcU9wSDlYNlFoN2t5dHZoU2d3PSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI4ZDYzYzUwMC1hMWRmLTRjZTEtOTQ1Ny0zMmEzMjliNDg4NzUiLCJjdXN0b206cm9sZXMiOiJHUk9VUF9BRE1JTiIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0yLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMl9md1A5aU5NZ0EiLCJjb2duaXRvOnVzZXJuYW1lIjoiOGQ2M2M1MDAtYTFkZi00Y2UxLTk0NTctMzJhMzI5YjQ4ODc1Iiwib3JpZ2luX2p0aSI6IjhlODQ1MTMxLTM0OTQtNGVhZS1iMzJjLTY4ZjVhYjBjZGIwZCIsImF1ZCI6IjVsM2hlNmJwN3BrNWxibzQ1Nmw3MmMzZmxuIiwiZXZlbnRfaWQiOiJjOGFjYjIyMi0yOTNlLTRhMTItYjg5ZC1mZWE2YjkxM2Q5ZTAiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTc3MzkxMjk4NSwibmFtZSI6IkhpbWFuc2h1IFBhbCIsImV4cCI6MTc3Mzk5OTM4NSwiaWF0IjoxNzczOTEyOTg1LCJqdGkiOiJjNGE5YmMxMC03Yzg4LTRhNDItYjM4ZC03MGJlZGQ4MWJmNjUiLCJlbWFpbCI6ImhpbWFuc2h1LnBhbEBmYXJlbmV4dXMuY29tIn0.B0aoxDKkp21l7ZuaaXxYoyRG25UCI3pqkkzTT8nFaRIJnZYA5-7lkcTTnm3quoh2KrZw2e9lgu3OIRuag5SmdBu0mvT1eDU6i9yJiIcy0Jmlh14tIZSne-m2EngSnchU_kUfH5Fg6FFsESPK0kfFRw_JR0afrb4DIPr8tp8set7z9IobdxA7Ah6Gr-47Bh59oXOzT4syWF4isSgPMxSinILUUQ-08KhHJrR5DP6IdIUnBVJ3nH1rYYIW7Ljv8j2gbHzsGJl6sv04ogOOuL8Efu4SJYiLd3gVrbTXQVJbdfjqwGjTZUFmhsuIHWwRDZRjm49zvNJoWCItFdamfsD_ew');
+  const  [token,setTokan] = useState<string>("eyJraWQiOiJFa0I1SkxyV0R3R0NpV2xvWHl6dEVVUCtqcU9wSDlYNlFoN2t5dHZoU2d3PSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI4ZDYzYzUwMC1hMWRmLTRjZTEtOTQ1Ny0zMmEzMjliNDg4NzUiLCJjdXN0b206cm9sZXMiOiJHUk9VUF9BRE1JTiIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0yLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMl9md1A5aU5NZ0EiLCJjb2duaXRvOnVzZXJuYW1lIjoiOGQ2M2M1MDAtYTFkZi00Y2UxLTk0NTctMzJhMzI5YjQ4ODc1Iiwib3JpZ2luX2p0aSI6ImM5MzMyYTM0LWNhMDEtNGIxYS1iYzczLWU0NTVkNjc2NWMxNyIsImF1ZCI6IjVsM2hlNmJwN3BrNWxibzQ1Nmw3MmMzZmxuIiwiZXZlbnRfaWQiOiI3NDExZDhjNi03M2IyLTQ1MzgtYjI4MS0zOTM4MDEyMWU1OTQiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTc3MzkzODQ3MywibmFtZSI6IkhpbWFuc2h1IFBhbCIsImV4cCI6MTc3NDAyNDg3MywiaWF0IjoxNzczOTM4NDczLCJqdGkiOiIyODRjMjQ0Zi1lNDZhLTQ5OTEtYTdkMS1lZGY0ODFlYjkyZTkiLCJlbWFpbCI6ImhpbWFuc2h1LnBhbEBmYXJlbmV4dXMuY29tIn0.QUsbuyyxeVi-R9tLrWH96E4K9fq1frxvcW4XyAFMG4bltiNaQVEkIPRVwtz8qB5BCUt4ILqF0APKG-p7RDQvYaaH9EkhDdE3zv05sy_NrNCMDghPpoIPSKQsZ9xebnXj2s8shTPWAk4y7EQYsk9eGSH-R15hJm52xFqD08PqHBmLLeAhu0JNaiSA804hvj5CTvejL89gA7jgQ__1SgS7AcfMPjUm3Fbz5u_Pb2LcjnBV6c2zCT7flOSz_-ActFPVPUXsELI9oOZwVeW0WazwIivggva3RAf28SQ_AJgcGvOPWUt91i6Q3Sd4WxAt5IMrQYfMYvQ2pkaa2KLyYdL44Q");
   const [searchData, setSearchData] = useState<SearchData[]>([
     {
         from: "",
@@ -199,12 +199,12 @@ const SearchForm = () => {
   }
   
   return (
-    <div className="flex justify-center items-center bg-gray-100 p-6">
-      <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-3xl">
+    <div className="">
+      <div className="bg-white shadow-xl rounded-xl p-8 w-full">
 
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+        {/* <h2 className="text-2xl font-semibold text-gray-800 mb-6">
           Flight Search ✈️
-        </h2>
+        </h2> */}
         <div className="flex mb-4 justify-between">
           <div className="d-flex">
             <button onClick={()=>addRemoveTripType('RT')} className={`border border-gray-300 px-4 cursor-pointer mr-2 ${tripType === 'RT' ? 'bg-blue-600 text-white' : ''}`}>Round Trip</button>

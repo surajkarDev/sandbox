@@ -65,3 +65,13 @@ button.searchForm.activeTabSearchForm:before {
     bottom: -1px;
     left: 0;
 }
+.distribution-img:before {
+    content: "";
+    display: block;
+    width: 1px;
+    height: 35px;
+    background-color: #d0d0ce;
+    position: absolute;
+    top: -4px;
+    left: 24px;
+}
