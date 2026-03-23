@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface SearchData {
   from: string;
@@ -8,7 +9,7 @@ interface SearchData {
 }
 
 const SearchForm = () => {
-  const  [token,setTokan] = useState<string>("eyJraWQiOiJFa0I1SkxyV0R3R0NpV2xvWHl6dEVVUCtqcU9wSDlYNlFoN2t5dHZoU2d3PSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI4ZDYzYzUwMC1hMWRmLTRjZTEtOTQ1Ny0zMmEzMjliNDg4NzUiLCJjdXN0b206cm9sZXMiOiJHUk9VUF9BRE1JTiIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0yLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMl9md1A5aU5NZ0EiLCJjb2duaXRvOnVzZXJuYW1lIjoiOGQ2M2M1MDAtYTFkZi00Y2UxLTk0NTctMzJhMzI5YjQ4ODc1Iiwib3JpZ2luX2p0aSI6ImM5MzMyYTM0LWNhMDEtNGIxYS1iYzczLWU0NTVkNjc2NWMxNyIsImF1ZCI6IjVsM2hlNmJwN3BrNWxibzQ1Nmw3MmMzZmxuIiwiZXZlbnRfaWQiOiI3NDExZDhjNi03M2IyLTQ1MzgtYjI4MS0zOTM4MDEyMWU1OTQiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTc3MzkzODQ3MywibmFtZSI6IkhpbWFuc2h1IFBhbCIsImV4cCI6MTc3NDAyNDg3MywiaWF0IjoxNzczOTM4NDczLCJqdGkiOiIyODRjMjQ0Zi1lNDZhLTQ5OTEtYTdkMS1lZGY0ODFlYjkyZTkiLCJlbWFpbCI6ImhpbWFuc2h1LnBhbEBmYXJlbmV4dXMuY29tIn0.QUsbuyyxeVi-R9tLrWH96E4K9fq1frxvcW4XyAFMG4bltiNaQVEkIPRVwtz8qB5BCUt4ILqF0APKG-p7RDQvYaaH9EkhDdE3zv05sy_NrNCMDghPpoIPSKQsZ9xebnXj2s8shTPWAk4y7EQYsk9eGSH-R15hJm52xFqD08PqHBmLLeAhu0JNaiSA804hvj5CTvejL89gA7jgQ__1SgS7AcfMPjUm3Fbz5u_Pb2LcjnBV6c2zCT7flOSz_-ActFPVPUXsELI9oOZwVeW0WazwIivggva3RAf28SQ_AJgcGvOPWUt91i6Q3Sd4WxAt5IMrQYfMYvQ2pkaa2KLyYdL44Q");
+  const  [token,setTokan] = useState<string>("eyJraWQiOiJFa0I1SkxyV0R3R0NpV2xvWHl6dEVVUCtqcU9wSDlYNlFoN2t5dHZoU2d3PSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI4ZDYzYzUwMC1hMWRmLTRjZTEtOTQ1Ny0zMmEzMjliNDg4NzUiLCJjdXN0b206cm9sZXMiOiJHUk9VUF9BRE1JTiIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0yLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMl9md1A5aU5NZ0EiLCJjb2duaXRvOnVzZXJuYW1lIjoiOGQ2M2M1MDAtYTFkZi00Y2UxLTk0NTctMzJhMzI5YjQ4ODc1Iiwib3JpZ2luX2p0aSI6ImEwNmM1OGQ3LWQyMDgtNGE1Ni04Y2I5LTMwMTc5YmJjZTdhNiIsImF1ZCI6IjVsM2hlNmJwN3BrNWxibzQ1Nmw3MmMzZmxuIiwiZXZlbnRfaWQiOiI1ZDE5MTFiOS1iN2E0LTRlODQtYjliZi1jMTdjODVjMWEwN2IiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTc3NDI2MDM3MywibmFtZSI6IkhpbWFuc2h1IFBhbCIsImV4cCI6MTc3NDM0Njc3MywiaWF0IjoxNzc0MjYwMzczLCJqdGkiOiJiY2Y4MWViMC1jNTZhLTQzYTctOTU2Ni1mZWUzMTcxZGQ2MDgiLCJlbWFpbCI6ImhpbWFuc2h1LnBhbEBmYXJlbmV4dXMuY29tIn0.pcbqWzZOJuMNba-bS7zXJ9DiH5NdUocoVkgNmDslPfAVtS5OJoGR5S8_rIXBQfUIaFqTsPyPmBIVLVDqmfcH-1Iwitri6toTMxXaXN4LIZVZ-JYBEpPKcZnipxe7GfZ8v_t7LudhaoLNywttSELvRPFqFK4n2tCurQKU9j-g22el-pVab15L0RcicILRShRvFfHPTueu_Wia5qQ-nCh901tUHjzZGQfnSJqP-JUb1TA03PbLgCRN1wjUb2TD9XZMDBcFfaQETmc4NboZYfL-K94znfXwgDOurYiKom35_LyKEJyhm0qe2gL6Ig_nFM7cfHGq1gO8q8Y7rQMxetThXA");
   const [searchData, setSearchData] = useState<SearchData[]>([
     {
         from: "",
@@ -21,64 +22,9 @@ const SearchForm = () => {
         departureDate: ""
     }
   ]);
+  const router = useRouter();
   const [tripType, setTripType] = useState<string>("RT");
-  const requestdata = {
-    editBeforeSending: false,
-    enhancedSeatingFlow: true,
-    flightPassResultsOnly: false,
-    pos: "CA",
-    isAgency: true,
-    corporateCodes: [],
-	  flight: [
-      {
-        windowDate: 0,
-        sequence: 1,
-        departureAirport: "YUL",
-        departureType: "FLIGHT",
-        arrivalAirport: "YVR",
-        arrivalType: "CITY",
-        departureDate: "2026-03-18",
-        departureTime: "",
-        timeSlot: null,
-        departTimeRange: "",
-        arrivalTimeRange: "",
-        connectionTime: "",
-        departTimeWindow: "",
-        arrivalTimeWindow: "",
-        travelClass: "ECO"
-      }
-    ],
-    passenger: [
-      {
-        type: "ADT",
-        quantity: 1
-      },
-      {
-        type: "YTH",
-        quantity: 0
-      }
-    ],
-    tripType: "OW",
-    travelClass: "UNK",
-    inclusiveFlights: [
-      "CB_GDS"
-    ],
-    maxStops: "4",
-    searchByTime: false,
-    hideBasicFare: false,
-    isFlexibleDate: false,
-    ndcPromo: "",
-    eUpgradeTo: "",
-    liveConnect: false,
-    baggagePieces: null,
-    corporateName: "sandbox",
-    airShopping: "V2",
-    flightTypeShow: "all",
-    aggregatorCode: "",
-    pcc: "",
-    iataVersion: "17",
-    language: "EN"
-  }
+  const requestdata = {"editBeforeSending":false,"enhancedSeatingFlow":true,"flightPassResultsOnly":false,"pos":"CA","isAgency":false,"corporateCodes":[],"flight":[{"windowDate":0,"sequence":1,"departureAirport":"YUL","departureType":"FLIGHT","arrivalAirport":"YVR","arrivalType":"CITY","departureDate":"2026-07-07","departureTime":"","timeSlot":null,"departTimeRange":"","arrivalTimeRange":"","connectionTime":"","departTimeWindow":"","arrivalTimeWindow":"","travelClass":"ECO"},{"windowDate":0,"sequence":2,"departureAirport":"YVR","departureType":"CITY","arrivalAirport":"YUL","arrivalType":"FLIGHT","departureDate":"2026-07-21","departureTime":"","timeSlot":null,"departTimeRange":"","arrivalTimeRange":"","connectionTime":"","departTimeWindow":"","arrivalTimeWindow":"","travelClass":"ECO"}],"passenger":[{"type":"ADT","quantity":1},{"type":"YTH","quantity":0}],"tripType":"RT","travelClass":"UNK","inclusiveFlights":["CB_GDS"],"maxStops":"4","searchByTime":true,"hideBasicFare":false,"isFlexibleDate":false,"ndcPromo":"","eUpgradeTo":"","liveConnect":false,"baggagePieces":null,"corporateName":"sandbox","airShopping":"V2","flightTypeShow":"all","aggregatorCode":"","pcc":"","iataVersion":"17","language":"EN"};
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const { name, value } = e.target;
     // setSearchData((prev) => ({ ...prev, [name]: value }));
@@ -123,7 +69,8 @@ const SearchForm = () => {
       const data = await response.json();
 
       console.log("response", data.id);
-      await executeSearch(data.id);
+      // await executeSearch(data.id);
+      router.push(`/pages/Lfspage/${data.id}`);
     
     } catch (error) {
       console.error("Error during search:", error);
@@ -135,7 +82,7 @@ const SearchForm = () => {
       const response = await fetch(url,{
         method:"GET",
         headers:{
-          'COntent-Type':'application/json',
+          'Content-Type':'application/json',
           'Authorization': `Bearer ${token}`
         }
       })
