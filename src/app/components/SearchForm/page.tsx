@@ -10,16 +10,19 @@ interface SearchData {
 
 const SearchForm = () => {
   const  [token,setTokan] = useState<string>("eyJraWQiOiJFa0I1SkxyV0R3R0NpV2xvWHl6dEVVUCtqcU9wSDlYNlFoN2t5dHZoU2d3PSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI4ZDYzYzUwMC1hMWRmLTRjZTEtOTQ1Ny0zMmEzMjliNDg4NzUiLCJjdXN0b206cm9sZXMiOiJHUk9VUF9BRE1JTiIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0yLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMl9md1A5aU5NZ0EiLCJjb2duaXRvOnVzZXJuYW1lIjoiOGQ2M2M1MDAtYTFkZi00Y2UxLTk0NTctMzJhMzI5YjQ4ODc1Iiwib3JpZ2luX2p0aSI6ImEwNmM1OGQ3LWQyMDgtNGE1Ni04Y2I5LTMwMTc5YmJjZTdhNiIsImF1ZCI6IjVsM2hlNmJwN3BrNWxibzQ1Nmw3MmMzZmxuIiwiZXZlbnRfaWQiOiI1ZDE5MTFiOS1iN2E0LTRlODQtYjliZi1jMTdjODVjMWEwN2IiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTc3NDI2MDM3MywibmFtZSI6IkhpbWFuc2h1IFBhbCIsImV4cCI6MTc3NDM0Njc3MywiaWF0IjoxNzc0MjYwMzczLCJqdGkiOiJiY2Y4MWViMC1jNTZhLTQzYTctOTU2Ni1mZWUzMTcxZGQ2MDgiLCJlbWFpbCI6ImhpbWFuc2h1LnBhbEBmYXJlbmV4dXMuY29tIn0.pcbqWzZOJuMNba-bS7zXJ9DiH5NdUocoVkgNmDslPfAVtS5OJoGR5S8_rIXBQfUIaFqTsPyPmBIVLVDqmfcH-1Iwitri6toTMxXaXN4LIZVZ-JYBEpPKcZnipxe7GfZ8v_t7LudhaoLNywttSELvRPFqFK4n2tCurQKU9j-g22el-pVab15L0RcicILRShRvFfHPTueu_Wia5qQ-nCh901tUHjzZGQfnSJqP-JUb1TA03PbLgCRN1wjUb2TD9XZMDBcFfaQETmc4NboZYfL-K94znfXwgDOurYiKom35_LyKEJyhm0qe2gL6Ig_nFM7cfHGq1gO8q8Y7rQMxetThXA");
+  const getTodayDate = () => {
+    return new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+  };
   const [searchData, setSearchData] = useState<SearchData[]>([
     {
         from: "",
         to: "",
-        departureDate: ""
+        departureDate: getTodayDate()
     },
     {
         from: "",
         to: "",
-        departureDate: ""
+        departureDate: getTodayDate()
     }
   ]);
   const router = useRouter();
@@ -34,6 +37,15 @@ const SearchForm = () => {
         ...updated[index],
         [name]: value,
       };
+      if (tripType === "RT") {
+        if (name === "from" && updated[index + 1]) {
+          updated[index + 1].to = value;
+        }
+
+        if (name === "to" && updated[index + 1]) {
+          updated[index + 1].from = value;
+        }
+      }
       return updated;
     });
   };
@@ -102,7 +114,7 @@ const SearchForm = () => {
           {
             from: "",
             to: "",
-            departureDate: ""
+            departureDate: getTodayDate()
           }
         ]);
       }else if(searchData.length > 2){
@@ -119,7 +131,7 @@ const SearchForm = () => {
           {
             from: "",
             to: "",
-            departureDate: ""
+            departureDate: getTodayDate()
           }
         ]);
       }
@@ -134,7 +146,7 @@ const SearchForm = () => {
           {
             from: "",
             to: "",
-            departureDate: ""
+            departureDate: getTodayDate()
           }
         ]);
       }
