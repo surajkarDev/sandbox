@@ -1,18 +1,15 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
 const LfsPage = () => {
   const params = useParams();
-
+  const token = JSON.parse(localStorage.getItem('token')|| 'null');
+  const [searchResult,useSearchResult] = useState<object>({});
   // ✅ Type-safe ID extraction
   const id = params?.id as string | undefined;
-
-  // ✅ Keep token as constant (no need for useState)
-  const token = "YOUR_TOKEN_HERE";
-
-  const executeSearch = async (searchId: string) => {
+  const searchRq = async (searchId: string) => {
     try {
       const response = await fetch(
         // `https://stgapi.a.farenexushub.com/sandbox-session/v2/executeSearch/${searchId}`,
@@ -21,22 +18,39 @@ const LfsPage = () => {
           method: "GET",
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`
           },
         }
       );
 
       const data = await response.json();
       console.log("execute response", data);
-
+      executeSearch(searchId)
     } catch (error) {
       console.error("Error during search execution:", error);
     }
   };
+  const executeSearch = async (id: string) => {
+    const url = `https://stgapi.a.farenexushub.com/sandbox-session/v2/executeSearch/${id}`;
+    try {
+      const response = await fetch(url,{
+        method:"GET",
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      const data = await response.json();
+      console.log("execute response", data);
+      useSearchResult(data.response[0])
+    }catch(error){
+      console.error("Error during search execution:", error);
+    }
+  }
 
   useEffect(() => {
     if (typeof id === 'string') {
-      executeSearch(id);
+      searchRq(id);
     }
   }, [id]);
 
@@ -44,6 +58,7 @@ const LfsPage = () => {
     <div>
       <h1>LFS Page</h1>
       <p>ID: {id}</p>
+      {JSON.stringify(searchResult)}
     </div>
   );
 };
