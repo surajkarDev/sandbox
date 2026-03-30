@@ -203,9 +203,9 @@ const SearchForm = () => {
           {
             windowDate: 0,
             sequence: 2,
-            departureAirport: "",
+            departureAirport: searchData[prev.length - 1]?.arrivalAirport, // ✅ Set to last departure airport
             departureType: "CITY",
-            arrivalAirport: "",
+            arrivalAirport: searchData[prev.length - 1]?.departureAirport, // ✅ Set to last arrival airport
             arrivalType: "FLIGHT",
             departureDate: searchData[prev.length - 1]?.departureDate || getTodayDate(),
             departureTime: "",
@@ -220,6 +220,18 @@ const SearchForm = () => {
         ]);
       }else if(searchData.length > 2){
         setSearchData((prev) => prev.slice(0,2));
+      }
+      if(searchData.length === 2){
+        setSearchData((prev) => {
+          const updated = [...prev];
+          updated[1] = {
+            ...updated[1],
+            departureAirport: updated[0].arrivalAirport,
+            arrivalAirport: updated[0].departureAirport,
+            departureDate: updated[0].departureDate
+          }as SearchSegment;
+          return updated;
+        });
       }
     } else if(type === 'OW'){
       if(searchData.length > 1){
@@ -342,6 +354,7 @@ const SearchForm = () => {
                                 placeholder="City or Airport"
                                 value={location.departureAirport}
                                 onChange={(e)=>handleChange(e,index)}
+                                disabled={index !== 0 && tripType === 'RT'} // Disable if it's not the first segment in Round Trip
                                 className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
@@ -355,6 +368,7 @@ const SearchForm = () => {
                                 placeholder="City or Airport"
                                 value={location.arrivalAirport}
                                 onChange={(e)=>handleChange(e,index)}
+                                disabled={index !== 0 && tripType === 'RT'} // Disable if it's not the first segment in Round Trip
                                 className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
