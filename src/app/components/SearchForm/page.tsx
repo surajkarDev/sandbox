@@ -110,8 +110,13 @@ const SearchForm = () => {
           updated[index + 1].departureAirport = value.toUpperCase();
         }
       }
-      if(name === 'departureDate' && updated[index + 1]){
-        updated[index + 1].departureDate = updated[index].departureDate;
+      if (name === 'departureDate' && updated[index + 1]) {
+        const currentDate = updated[index].departureDate;
+        const nextDate = updated[index + 1].departureDate;
+
+        if (!nextDate || nextDate < currentDate) {
+          updated[index + 1].departureDate = currentDate;
+        }
       }
       return updated;
     });
