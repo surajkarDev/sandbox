@@ -291,9 +291,9 @@ const SearchForm = () => {
         </h2> */}
         <div className="flex mb-4 justify-between">
           <div className="d-flex">
-            <button onClick={()=>addRemoveTripType('RT')} className={`border border-gray-300 px-4 cursor-pointer mr-2 ${tripType === 'RT' ? 'bg-blue-600 text-white' : ''}`}>Round Trip</button>
-            <button onClick={()=>addRemoveTripType('OW')} className={`border border-gray-300 px-4 cursor-pointer mr-2 ${tripType === 'OW' ? 'bg-blue-600 text-white' : ''}`}>One Way</button>
-            <button onClick={()=>addRemoveTripType('MC')} className={`border border-gray-300 px-4 cursor-pointer ${tripType === 'MC' ? 'bg-blue-600 text-white' : ''}`}>Multi City</button>
+            <button onClick={()=>addRemoveTripType('RT')} className={`border border-gray-300 px-4 cursor-pointer mr-2 ${tripType === 'RT' ? 'selectedTab text-white' : ''}`}>Round Trip</button>
+            <button onClick={()=>addRemoveTripType('OW')} className={`border border-gray-300 px-4 cursor-pointer mr-2 ${tripType === 'OW' ? 'selectedTab text-white' : ''}`}>One Way</button>
+            <button onClick={()=>addRemoveTripType('MC')} className={`border border-gray-300 px-4 cursor-pointer ${tripType === 'MC' ? 'selectedTab text-white' : ''}`}>Multi City</button>
           </div>
           {
             tripType === 'MC' && (
@@ -363,12 +363,15 @@ const SearchForm = () => {
             }
           
           {/* Button */}
-          <div className="md:col-span-2 text-right">
+          <div className="md:col-span-2 text-right flex justify-end">
             <button
               type="submit"
-              className="px-4 bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition duration-300"
+              className="px-4 flex items-center gap-1 selectedTab text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition duration-300"
             >
-              Search Flights 🔍
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+              </svg>
+              Search Flights
             </button>
           </div>
         </form>

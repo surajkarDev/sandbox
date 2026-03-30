@@ -75,3 +75,6 @@ button.searchForm.activeTabSearchForm:before {
     top: -4px;
     left: 24px;
 }
+.selectedTab {
+    background: #35547b;
+}
