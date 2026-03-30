@@ -78,3 +78,7 @@ button.searchForm.activeTabSearchForm:before {
 .selectedTab {
     background: #35547b;
 }
+.searchForm svg {
+    transform: rotate(90deg);
+    color: #35547b;
+}
