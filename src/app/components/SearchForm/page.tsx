@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 type SearchSegment = {
@@ -158,6 +158,7 @@ const SearchForm = () => {
     console.log("searchData", searchData);
     localStorage.setItem('searchRequest',JSON.stringify(searchData));
     localStorage.setItem('token',JSON.stringify(token));
+    localStorage.setItem('tripType',JSON.stringify(tripType));
     const requestBody = {
       request: JSON.stringify(requestdata),
       xml: null
@@ -308,6 +309,18 @@ const SearchForm = () => {
     const localDate = new Date(today.getTime() - offset * 60 * 1000);
     return localDate.toISOString().split("T")[0];
   }
+  useEffect(()=>{
+    let searchRequest = localStorage.getItem('searchRequest');
+    let tripType = localStorage.getItem('tripType');
+    if (searchRequest) {
+      const parsedData = JSON.parse(searchRequest);
+      console.log('Retrieved search request:', parsedData);
+      setSearchData(parsedData);
+    }
+    if (tripType) {
+      setTripType(JSON.parse(tripType));
+    }
+  },[]);
   return (
     <div className="">
       <div className="bg-white shadow-xl rounded-xl p-8 w-full">
