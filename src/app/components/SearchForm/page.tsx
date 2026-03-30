@@ -110,6 +110,9 @@ const SearchForm = () => {
           updated[index + 1].departureAirport = value.toUpperCase();
         }
       }
+      if(name === 'departureDate' && updated[index + 1]){
+        updated[index + 1].departureDate = updated[index].departureDate;
+      }
       return updated;
     });
   };
@@ -199,7 +202,7 @@ const SearchForm = () => {
             departureType: "CITY",
             arrivalAirport: "",
             arrivalType: "FLIGHT",
-            departureDate: getTodayDate(),
+            departureDate: searchData[prev.length - 1]?.departureDate || getTodayDate(),
             departureTime: "",
             timeSlot: null,
             departTimeRange: "",
@@ -228,7 +231,7 @@ const SearchForm = () => {
             departureType: "CITY",
             arrivalAirport: "",
             arrivalType: "FLIGHT",
-            departureDate: getTodayDate(),
+            departureDate: searchData[prev.length - 1]?.departureDate || getTodayDate(),
             departureTime: "",
             timeSlot: null,
             departTimeRange: "",
@@ -256,7 +259,7 @@ const SearchForm = () => {
               departureType: "CITY",
               arrivalAirport: "",
               arrivalType: "FLIGHT",
-              departureDate: getTodayDate(),
+              departureDate: searchData[prev.length - 1]?.departureDate || getTodayDate(), // ✅ Set to last departure date or today
               departureTime: "",
               timeSlot: null,
               departTimeRange: "",
@@ -282,6 +285,12 @@ const SearchForm = () => {
     });
   };
   
+  const getTodayLocalDate = () => {
+    const today = new Date();
+    const offset = today.getTimezoneOffset();
+    const localDate = new Date(today.getTime() - offset * 60 * 1000);
+    return localDate.toISOString().split("T")[0];
+  }
   return (
     <div className="">
       <div className="bg-white shadow-xl rounded-xl p-8 w-full">
@@ -353,6 +362,7 @@ const SearchForm = () => {
                                 name="departureDate"
                                 value={location.departureDate}
                                 onChange={(e)=>handleChange(e,index)}
+                                min={index === 0? getTodayLocalDate(): searchData[index - 1]?.departureDate || getTodayLocalDate()}
                                 className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
