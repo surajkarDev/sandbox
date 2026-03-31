@@ -120,6 +120,7 @@ const HomePage = (props: { children: string | number | bigint | boolean | React.
             <div className="w-full">
               <div className="flex">
                 {
+                    fullUrl !== '/' && (
                     <div className="w-1/12 border-r border-gray-300">
                         {menuItems.map((item, index) => {
                             const isActive = pathname === item.path;
@@ -194,6 +195,7 @@ const HomePage = (props: { children: string | number | bigint | boolean | React.
                             );
                         })}
                     </div>
+                    )
                 }
                 
                 <div className={fullUrl !== '/' ? 'w-11/12': 'w-full'}>
