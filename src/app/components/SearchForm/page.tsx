@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 
 type SearchSegment = {
   windowDate: number;
@@ -47,9 +48,15 @@ type RequestData = {
   iataVersion: string;
   language: string;
 };
+interface storeState {
+  counter: {
+    token: string;
+  };
+}
 type TripType = "RT" | "OW" | "MC";
 const SearchForm = () => {
-  const  [token,setTokan] = useState<string>("eyJraWQiOiJFa0I1SkxyV0R3R0NpV2xvWHl6dEVVUCtqcU9wSDlYNlFoN2t5dHZoU2d3PSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI4ZDYzYzUwMC1hMWRmLTRjZTEtOTQ1Ny0zMmEzMjliNDg4NzUiLCJjdXN0b206cm9sZXMiOiJHUk9VUF9BRE1JTiIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0yLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMl9md1A5aU5NZ0EiLCJjb2duaXRvOnVzZXJuYW1lIjoiOGQ2M2M1MDAtYTFkZi00Y2UxLTk0NTctMzJhMzI5YjQ4ODc1Iiwib3JpZ2luX2p0aSI6ImRiZGIzMjNhLWEwMDAtNGQ0OS04MjMzLWYwZjdkZDFiODJkYyIsImF1ZCI6IjVsM2hlNmJwN3BrNWxibzQ1Nmw3MmMzZmxuIiwiZXZlbnRfaWQiOiIyYzBiNDUwMy0yYTc5LTRlNDAtOGU5Mi0zZjBlZGU2NzhmMDMiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTc3NDg0NjI4NiwibmFtZSI6IkhpbWFuc2h1IFBhbCIsImV4cCI6MTc3NDkzMjY4NiwiaWF0IjoxNzc0ODQ2Mjg2LCJqdGkiOiI0NWNiOTQyMC1lOTk4LTRiZDQtODE2Ny0xYWZiMTA2ZDdlZmQiLCJlbWFpbCI6ImhpbWFuc2h1LnBhbEBmYXJlbmV4dXMuY29tIn0.L6W0RQBfw5MH8LmXbkzuDl9tfYz5VPJED9F_LyfF-TCaV9lTOmEBQzCwwSh8x5NiMX5RaeiMzidFqTjDuAhBvIq5qv9ZElKpK-vf-Gkhd_EQ6jFz42JZUNucZMFIUDAw9NR05RVHhPdoMgvDEQjCElJ6JZljRIJNyZ6VJye9Y-Gi-vHajwE_b2HAHM08ql6ciDT61L6jAkqVJ7V3E2q7oTWw-Z7k2JRx-0mZKgx_SHPEwVBqYAmHNP_HyO_fOdVKNyhCJ8rTM-kqr7Nc2gXc0TjGLdNfVBWRmQ6LUvJawUTboX5t1s8IkTd20pn91G75rVHQGFTFotMWvSV26P1FGg");
+  const  [token,setTokan] = useState<string>("eyJraWQiOiJFa0I1SkxyV0R3R0NpV2xvWHl6dEVVUCtqcU9wSDlYNlFoN2t5dHZoU2d3PSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI4ZDYzYzUwMC1hMWRmLTRjZTEtOTQ1Ny0zMmEzMjliNDg4NzUiLCJjdXN0b206cm9sZXMiOiJHUk9VUF9BRE1JTiIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0yLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMl9md1A5aU5NZ0EiLCJjb2duaXRvOnVzZXJuYW1lIjoiOGQ2M2M1MDAtYTFkZi00Y2UxLTk0NTctMzJhMzI5YjQ4ODc1Iiwib3JpZ2luX2p0aSI6IjRkYTU0ZmRjLTdlM2QtNDI1Ni04MzQ0LTE1MWNlN2Q3Yjg5NCIsImF1ZCI6IjVsM2hlNmJwN3BrNWxibzQ1Nmw3MmMzZmxuIiwiZXZlbnRfaWQiOiI1OTU4ZjJjMS1mMWM3LTQzOTktYWExMi03ZmUyM2MwNTZlN2UiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTc3NTQ5NzMxOCwibmFtZSI6IkhpbWFuc2h1IFBhbCIsImV4cCI6MTc3NTU4MzcxOCwiaWF0IjoxNzc1NDk3MzE4LCJqdGkiOiI3ZjRhMmM1Mi1mMGIxLTRjM2YtYjc2NC04ZDk5MTNkNDQ1MTAiLCJlbWFpbCI6ImhpbWFuc2h1LnBhbEBmYXJlbmV4dXMuY29tIn0.k5wYHG6xb338H5e34lAoLAEwlRNHvD0UgXVBG6h3GzJ2DwTPaIiULLLGbDyvUEYaYn21HEegT8cwJbUQAJQXFs5CKt6Qbccu0JkLyw8FMI1MUPajRhd8Y8J-i8njdfq1ayt2Lz52YIrcii6QmTDEajd0NBPhK82XiS93fqz9HQxgm24oiUpkTRJbg5TlLyjinKGLGLdSORk0AOYIhiFSGic4NRqeJUu-aaBUZZfXTU27Od14Mm0j3JPePE2lWkgoLKGrUqiEgx4eopvX73MyYCVfOzruYxmHx1kC-e1b2vqX_X58z6efuT7VkBhEAk7Ucxne3CHRdjc77qtTn29dBw");
+  const storeToken = useSelector((state:storeState) => state.counter.token);
   const getTodayDate = () => {
     return new Date().toISOString().split("T")[0]; // YYYY-MM-DD
   };
@@ -328,6 +335,7 @@ const SearchForm = () => {
         {/* <h2 className="text-2xl font-semibold text-gray-800 mb-6">
           Flight Search ✈️
         </h2> */}
+        {/* {JSON.stringify(storeToken)} */}
         <div className="flex mb-4 justify-between">
           <div className="d-flex">
             <button onClick={()=>addRemoveTripType('RT')} className={`border border-gray-300 px-4 cursor-pointer mr-2 ${tripType === 'RT' ? 'selectedTab text-white' : ''}`}>Round Trip</button>

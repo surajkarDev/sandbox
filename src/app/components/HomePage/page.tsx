@@ -4,6 +4,8 @@ import Image from "next/image";
 import { usePathname, useSearchParams } from 'next/navigation';
 import '../../globals.css';
 import Link from "next/link";
+import { Provider } from 'react-redux';
+import store from '../../store';
 const HomePage = (props: { children: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }) => {
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -199,7 +201,11 @@ const HomePage = (props: { children: string | number | bigint | boolean | React.
                 }
                 
                 <div className={fullUrl !== '/' ? 'w-11/12': 'w-full'}>
-                  {props.children}
+                  {
+                    <Provider store={store}>
+                        { props.children}
+                    </Provider>
+                  }
                 </div>
               </div>
             </div>
