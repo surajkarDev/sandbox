@@ -20,9 +20,17 @@ type FlightSegment = {
 type OriginDestinationInfo = {
   flightSegmentInfo: FlightSegment[];
 };
+type PriceClass = {
+  fareClass : string;
+  fareClassType : string;
+}
+type FareFamily = {
+  priceClass: PriceClass[];
+};
 
 type SliceItinerary = {
   originDestinationInfo: OriginDestinationInfo[];
+  fareFamily:FareFamily[];
 };
 
 type SowSlice = {
@@ -124,6 +132,15 @@ const LfsPage = () => {
     }
   };
 
+  const fareFamilyClass = (index: number, total: number) => {
+    if (total > 0 && total % 5 === 0) {
+      return "lg:w-1/5";
+    }
+
+    const fullRowCount = Math.floor(total / 5) * 5;
+    return index >= fullRowCount ? "lg:flex-1" : "lg:w-1/5";
+  };
+
   /* =========================
      ✅ TRIGGER API
   ========================= */
@@ -159,7 +176,7 @@ const LfsPage = () => {
                   <div key={itineraryIndex} className="itinerary border p-3 mb-3">
 
                     {itinerary?.originDestinationInfo?.map((info, infoIndex) => (
-                      <div key={infoIndex} className="route">
+                      <div key={infoIndex} className="route py-6 px-1">
 
                         {info?.flightSegmentInfo?.map((segment, segIndex) => (
                           <div key={segIndex} className="segment flex justify-between">
@@ -181,7 +198,15 @@ const LfsPage = () => {
 
                       </div>
                     ))}
-
+                    <div className='flex flex-wrap'>
+                      {
+                        itinerary?.fareFamily?.map((fare,fareindex)=>(
+                          <div className={`p-4 border cursor-pointer w-full ${fareFamilyClass(fareindex, itinerary?.fareFamily?.length ?? 0)} flex items-center justify-center`} key={fareindex}>
+                            {fare?.priceClass[0]?.fareClassType}
+                          </div>
+                        ))
+                      }
+                    </div>
                   </div>
                 ))}
 
