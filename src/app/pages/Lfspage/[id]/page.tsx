@@ -138,6 +138,8 @@ const LfsPage = () => {
     }
 
     const fullRowCount = Math.floor(total / 5) * 5;
+    // console.log("fullRowCount:", fullRowCount, "index:", index);
+    console.log(Math.floor(total / 5))
     return index >= fullRowCount ? "lg:flex-1" : "lg:w-1/5";
   };
 
