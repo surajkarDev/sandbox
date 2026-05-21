@@ -26,11 +26,16 @@ type PriceClass = {
 }
 type FareFamily = {
   priceClass: PriceClass[];
+  reviewKey: string;
+  totalPrice: string;
+  currencyCode: string;
 };
 
 type SliceItinerary = {
   originDestinationInfo: OriginDestinationInfo[];
   fareFamily:FareFamily[];
+  tripType?: string;
+  boundIndex?: number;
 };
 
 type SowSlice = {
@@ -58,6 +63,8 @@ const LfsPage = () => {
   const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedFare, setSelectedFare] = useState<FareFamily[]>([]);
+  const [tripType, setTripType] = useState<string>("");
 
   /* =========================
      ✅ GET TOKEN (CLIENT SAFE)
@@ -123,6 +130,7 @@ const LfsPage = () => {
 
       const result = data?.response?.[0] || null;
       setSearchResult(result);
+      setTripType(result?.sowSliceItinerary?.[0]?.sliceItinerary?.[0]?.tripType || "");
 
     } catch (err) {
       console.error("ExecuteSearch Error:", err);
@@ -137,12 +145,68 @@ const LfsPage = () => {
       return "lg:w-1/5";
     }
 
-    const fullRowCount = Math.floor(total / 5) * 5;
+  const fullRowCount = Math.floor(total / 5) * 5;
     // console.log("fullRowCount:", fullRowCount, "index:", index);
     console.log(Math.floor(total / 5))
     return index >= fullRowCount ? "lg:flex-1" : "lg:w-1/5";
   };
 
+  const getCurrencySymbol = (code:string) =>{
+      const symbols: { [key: string]: string } = {
+        USD: "$",
+        CAD: "$",
+        EUR: "€",
+        GBP: "£",
+        INR: "₹",
+        JPY: "¥",
+        AUD: "A$",
+        CHF: "CHF",
+        CNY: "¥"
+      };
+      return symbols[code] || code;
+  };
+
+  const handelFlightSelect = (e: React.ChangeEvent<HTMLInputElement>,fare: FareFamily,sliceIndex: number) => {
+
+    const tripType = searchResult?.sowSliceItinerary?.[0]?.sliceItinerary?.[0]?.tripType;
+
+    if (!tripType) return;
+
+    const fareselected = {
+      ...fare,
+      boundIndex: sliceIndex
+    };
+
+    // ONE WAY
+    if (tripType === "OW") {
+      setSelectedFare([fareselected]);
+      return;
+    }
+
+    // ROUND TRIP
+    if (tripType === "RT") {
+
+      setSelectedFare((prev) => {
+
+        const existingIndex = prev.findIndex(
+          item => item.boundIndex === sliceIndex
+        );
+        console.log("existingIndex",existingIndex);
+        
+        // Replace existing selection for same bound
+        if (existingIndex !== -1) {
+
+          const updatedFare = [...prev];
+          updatedFare[existingIndex] = fareselected;
+
+          return updatedFare;
+        }
+
+        // Add new selection
+        return [...prev, fareselected];
+      });
+    }
+  };
   /* =========================
      ✅ TRIGGER API
   ========================= */
@@ -157,9 +221,9 @@ const LfsPage = () => {
   ========================= */
   return (
     <div className="lfs-container">
-      <h1>LFS Page</h1>
-      <p><strong>ID:</strong> {id}</p>
-
+      <h1 className='ml-4'>LFS Page</h1>
+      <p className='ml-4'><strong>ID:</strong> {id}</p>
+      {selectedFare.length > 0 ? JSON.stringify(selectedFare): "No fare selected"}
       {/* ✅ Loading */}
       {loading && <p>Loading flights...</p>}
 
@@ -170,9 +234,10 @@ const LfsPage = () => {
       {!loading && !error && (
         <div className="flight-results">
           {/* {JSON.stringify(searchResult, null, 2)} */}
+          {/* {searchResult.sowSliceItinerary[0].sliceItinerary[0].tripType} */}
           {searchResult?.sowSliceItinerary?.length ? (
             searchResult.sowSliceItinerary.map((slice, sliceIndex) => (
-              <div key={sliceIndex} className="slice-card w-full">
+              <div key={sliceIndex} className="slice-card w-full mx-4">
 
                 {slice?.sliceItinerary?.map((itinerary, itineraryIndex) => (
                   <div key={itineraryIndex} className="itinerary border p-3 mb-3">
@@ -181,20 +246,21 @@ const LfsPage = () => {
                       <div key={infoIndex} className="route py-6 px-1">
 
                         {info?.flightSegmentInfo?.map((segment, segIndex) => (
-                          <div key={segIndex} className="segment flex justify-between">
-                            <div className=''>
+                          <div key={segIndex} className="segment flex">
+                            <div className='whitespace-nowrap mr-10'>
                               {segment?.operatingCarrier?.code} {segment?.flightNumber}
                             </div>
-                            <span className="airport">
-                              {segment?.departure?.airportCode} {segment?.departureDateTime?.split('T')[1]?.slice(0, 5)}
-                            </span>
+                            <div className='w-full flex justify-between items-center'>
+                              <span className="airport">
+                                {segment?.departure?.airportCode} {segment?.departureDateTime?.split('T')[1]?.slice(0, 5)}
+                              </span>
 
-                            <span className="arrow"> → </span>
+                              <span className="arrow"> → </span>
 
-                            <span className="airport">
-                              {segment?.arrival?.airportCode} {segment?.arrivalDateTime?.split('T')[1]?.slice(0, 5)}
-                            </span>
-
+                              <span className="airport">
+                                {segment?.arrival?.airportCode} {segment?.arrivalDateTime?.split('T')[1]?.slice(0, 5)}
+                              </span>
+                            </div>
                           </div>
                         ))}
 
@@ -204,7 +270,11 @@ const LfsPage = () => {
                       {
                         itinerary?.fareFamily?.map((fare,fareindex)=>(
                           <div className={`p-4 border cursor-pointer w-full ${fareFamilyClass(fareindex, itinerary?.fareFamily?.length ?? 0)} flex items-center justify-center`} key={fareindex}>
-                            {fare?.priceClass[0]?.fareClassType}
+                            <div className='text-center'>
+                              <p>{fare?.priceClass[0]?.fareClassType}</p>
+                              <input type="radio" name={`fare${sliceIndex}`} className='ml-2' onChange={(e)=>handelFlightSelect(e.target.value,fare,sliceIndex)} />
+                              <p>{fare?.currencyCode} {getCurrencySymbol(fare?.currencyCode)}{fare?.totalPrice}</p>
+                            </div>
                           </div>
                         ))
                       }
