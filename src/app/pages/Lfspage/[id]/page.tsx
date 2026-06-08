@@ -11,14 +11,16 @@ import "../../../../../public/css/LfsPage.css";
 type FlightSegment = {
   departure: { airportCode: string };
   arrival: { airportCode: string };
-  operatingCarrier: { code: string };
+  operatingCarrier: { code: string, name: string };
   flightNumber: string | number;
   departureDateTime: string | number;
   arrivalDateTime: string | number;
+  equipment: { code: string };
 };
 
 type OriginDestinationInfo = {
   flightSegmentInfo: FlightSegment[];
+  boundDuration:number;
 };
 type PriceClass = {
   fareClass : string;
@@ -29,6 +31,8 @@ type FareFamily = {
   reviewKey: string;
   totalPrice: string;
   currencyCode: string;
+  boundIndex?: number;
+  originDestinationInfo: OriginDestinationInfo[];
 };
 
 type SliceItinerary = {
@@ -65,6 +69,7 @@ const LfsPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedFare, setSelectedFare] = useState<FareFamily[]>([]);
   const [tripType, setTripType] = useState<string>("");
+  const [editbeforeSend,setEditBeforeSend] = useState<boolean>(false);
 
   /* =========================
      ✅ GET TOKEN (CLIENT SAFE)
@@ -166,16 +171,18 @@ const LfsPage = () => {
       return symbols[code] || code;
   };
 
-  const handelFlightSelect = (e: React.ChangeEvent<HTMLInputElement>,fare: FareFamily,sliceIndex: number) => {
+  const handelFlightSelect = (fare: FareFamily, sliceIndex: number, originDestinationInfo: OriginDestinationInfo[] | OriginDestinationInfo) => {
 
     const tripType = searchResult?.sowSliceItinerary?.[0]?.sliceItinerary?.[0]?.tripType;
 
     if (!tripType) return;
 
+    // Ensure originDestinationInfo matches FareFamily type (array)
     const fareselected = {
       ...fare,
-      boundIndex: sliceIndex
-    };
+      originDestinationInfo: Array.isArray(originDestinationInfo) ? originDestinationInfo : [originDestinationInfo],
+      boundIndex: sliceIndex,
+    } as FareFamily;
 
     // ONE WAY
     if (tripType === "OW") {
@@ -184,7 +191,7 @@ const LfsPage = () => {
     }
 
     // ROUND TRIP
-    if (tripType === "RT") {
+    if (tripType === "RT" || tripType === "MC") {
 
       setSelectedFare((prev) => {
 
@@ -207,6 +214,10 @@ const LfsPage = () => {
       });
     }
   };
+
+  const handleReset = () => {
+    setSelectedFare([]);
+  }
   /* =========================
      ✅ TRIGGER API
   ========================= */
@@ -221,9 +232,61 @@ const LfsPage = () => {
   ========================= */
   return (
     <div className="lfs-container">
+      {/* {JSON.stringify(searchResult.sowSliceItinerary)} */}
+      {/* {JSON.stringify(selectedFare)} */}
       <h1 className='ml-4'>LFS Page</h1>
       <p className='ml-4'><strong>ID:</strong> {id}</p>
-      {selectedFare.length > 0 ? JSON.stringify(selectedFare): "No fare selected"}
+      {selectedFare.length > 0 && (
+        <div className='selected-fare ml-4 mb-4 p-3 border rounded'>
+          {
+            selectedFare.map((fare,index)=>(
+              <div key={index} className={`${selectedFare.length - 1 != index ? 'mb-3' : ''} border border-dashed border-gray-300 p-3 rounded`}>
+                <div className='flex justify-between items-center mb-2'>
+                  <span>
+                    Aircraft Type {fare.originDestinationInfo[0]?.flightSegmentInfo[0]?.equipment?.code}
+                  </span>
+                  <span>
+                    Trip Duration: {fare.originDestinationInfo[0]?.boundDuration}
+                  </span>
+                  <p className="border border-dashed border-gray-300 px-2 text-[13px]">{fare?.priceClass[0]?.fareClassType}</p>
+                </div>
+                <div className='flex justify-between items-center mb-3'>
+                  <span>
+                    {fare.originDestinationInfo[0]?.flightSegmentInfo[0]?.operatingCarrier.code} {fare.originDestinationInfo[0]?.flightSegmentInfo[0]?.flightNumber}
+                    <p><small className="text-[#868686] text-[13px]">Operated By :</small> <span className="text-[14px]">{fare.originDestinationInfo[0]?.flightSegmentInfo[0]?.operatingCarrier.name}</span></p>
+                  </span>
+                  <span>
+                      {fare.originDestinationInfo[0]?.flightSegmentInfo[0]?.departure?.airportCode} {fare.originDestinationInfo[0]?.flightSegmentInfo[0]?.departureDateTime?.split('T')[1]?.slice(0, 5)}
+                      <span className="mx-5 text-[#868686]">------------------------------------------------------------------</span>
+                      {fare.originDestinationInfo[0]?.flightSegmentInfo[0]?.arrival?.airportCode} {fare.originDestinationInfo[0]?.flightSegmentInfo[0]?.arrivalDateTime?.split('T')[1]?.slice(0, 5)}
+                  </span>
+                  <p className="invisible">{fare?.priceClass[0]?.fareClassType}</p>
+                </div>
+                <p>
+                  {/* {fare?.currencyCode} {getCurrencySymbol(fare?.currencyCode)}{fare?.totalPrice} */}
+                  Includes travel operated by {fare.originDestinationInfo[0]?.flightSegmentInfo[0]?.operatingCarrier.name}
+                </p>
+              </div>
+            ))
+          }
+          <div className='mt-3 flex justify-between items-center'>
+            <div className="">
+              <button className='bg-gray-700 text-white px-3 py-1 rounded text-[13px] cursor-pointer' onClick={() => handleReset()}>Reset</button>
+              <button className='bg-gray-700 text-white px-3 py-1 rounded ml-2 text-[13px] cursor-pointer'>Details</button>
+            </div>
+            <div className="mt-2">
+              <span>
+                <input type="checkbox" id="terms" name="terms" className='mr-2' />
+                <label htmlFor="terms" className='text-sm text-[#868686]'>Edit Before Send</label>
+              </span>
+              <span className='ml-4 font-bold'>
+                {selectedFare[0].currencyCode} {getCurrencySymbol(selectedFare[0].currencyCode)}{selectedFare.reduce((total, fare) => total + parseFloat(fare.totalPrice), 0).toFixed(2)}
+              </span>
+              <button className='bg-gray-700 text-white px-3 py-1 rounded ml-4 cursor-pointer'>Book</button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* ✅ Loading */}
       {loading && <p>Loading flights...</p>}
 
@@ -272,7 +335,7 @@ const LfsPage = () => {
                           <div className={`p-4 border cursor-pointer w-full ${fareFamilyClass(fareindex, itinerary?.fareFamily?.length ?? 0)} flex items-center justify-center`} key={fareindex}>
                             <div className='text-center'>
                               <p>{fare?.priceClass[0]?.fareClassType}</p>
-                              <input type="radio" name={`fare${sliceIndex}`} className='ml-2' onChange={(e)=>handelFlightSelect(e.target.value,fare,sliceIndex)} />
+                              <input type="radio" name={`fare${sliceIndex}`} className='ml-2' onChange={() => handelFlightSelect(fare, sliceIndex,itinerary.originDestinationInfo)} />
                               <p>{fare?.currencyCode} {getCurrencySymbol(fare?.currencyCode)}{fare?.totalPrice}</p>
                             </div>
                           </div>

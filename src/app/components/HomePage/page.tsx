@@ -101,12 +101,12 @@ const HomePage = (props: { children: string | number | bigint | boolean | React.
                         </select>
 
                         {/* User */}
-                        <span className="text-white text-sm font-medium">
+                        <span className="text-black text-sm font-medium">
                         Himanshu Pal
                         </span>
 
                         {/* Logout */}
-                        <span className="cursor-pointer text-white text-lg">
+                        <span className="cursor-pointer text-black text-lg">
                         ⎋
                         </span>
 
