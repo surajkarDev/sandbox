@@ -215,8 +215,23 @@ const LfsPage = () => {
     }
   };
 
+  const isFareSelected = (fare: FareFamily, sliceIndex: number) =>
+    selectedFare.some(
+      selected =>
+        selected.boundIndex === sliceIndex &&
+        selected.reviewKey === fare.reviewKey
+    );
+
   const handleReset = () => {
     setSelectedFare([]);
+  }
+
+  const book = () => {
+    if(selectedFare.length === 0){
+      alert("Please select a fare before booking.");
+      return;
+    }
+    alert("Booking successful! (This is a mock action.)");
   }
   /* =========================
      ✅ TRIGGER API
@@ -282,7 +297,7 @@ const LfsPage = () => {
               <span className='ml-4 font-bold'>
                 {selectedFare[0].currencyCode} {getCurrencySymbol(selectedFare[0].currencyCode)}{selectedFare.reduce((total, fare) => total + parseFloat(fare.totalPrice), 0).toFixed(2)}
               </span>
-              <button className='bg-gray-700 text-white px-3 py-1 rounded ml-4 cursor-pointer'>Book</button>
+              <button className='bg-gray-700 text-white px-3 py-1 rounded ml-4 cursor-pointer' onClick={()=>book()}>Book</button>
             </div>
           </div>
         </div>
@@ -335,7 +350,13 @@ const LfsPage = () => {
                           <div className={`p-4 border cursor-pointer w-full ${fareFamilyClass(fareindex, itinerary?.fareFamily?.length ?? 0)} flex items-center justify-center`} key={fareindex}>
                             <div className='text-center'>
                               <p>{fare?.priceClass[0]?.fareClassType}</p>
-                              <input type="radio" name={`fare${sliceIndex}`} className='ml-2' onChange={() => handelFlightSelect(fare, sliceIndex,itinerary.originDestinationInfo)} />
+                              <input
+                                type="radio"
+                                name={`fare${sliceIndex}`}
+                                className='ml-2'
+                                checked={isFareSelected(fare, sliceIndex)}
+                                onChange={() => handelFlightSelect(fare, sliceIndex, itinerary.originDestinationInfo)}
+                              />
                               <p>{fare?.currencyCode} {getCurrencySymbol(fare?.currencyCode)}{fare?.totalPrice}</p>
                             </div>
                           </div>
