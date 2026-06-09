@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams,useRouter } from 'next/navigation';
 import "../../../../../public/css/LfsPage.css";
+
 
 /* =========================
    ✅ TYPES
@@ -69,7 +70,8 @@ const LfsPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedFare, setSelectedFare] = useState<FareFamily[]>([]);
   const [tripType, setTripType] = useState<string>("");
-  const [editbeforeSend,setEditBeforeSend] = useState<boolean>(false);
+  const [editBeforeSend, setEditBeforeSend] = useState<boolean>(false);
+  const router = useRouter();
 
   /* =========================
      ✅ GET TOKEN (CLIENT SAFE)
@@ -226,12 +228,52 @@ const LfsPage = () => {
     setSelectedFare([]);
   }
 
-  const book = () => {
+  const book = async () => {
     if(selectedFare.length === 0){
       alert("Please select a fare before booking.");
       return;
     }
-    alert("Booking successful! (This is a mock action.)");
+    let reviewKeys = '';
+    selectedFare.forEach(fare => {
+      reviewKeys += fare.reviewKey + ',';
+    });
+    console.log("Booking with fares:", selectedFare);
+    console.log("Review Keys for booking:", reviewKeys);
+    console.log("searchResult?.status?.gdsType:", searchResult?.status?.gdsType);
+    let req = {
+      reviewKey : reviewKeys,
+      apiSource : searchResult?.status?.gdsType || "Unknown",
+      editBeforeSending : editBeforeSend
+    }
+    let requests = {
+      request:JSON.stringify(req),
+      id: id,
+      isCombinedResponse: false,
+      editBeforeSending : editBeforeSend
+    } 
+    try {
+      const response = await fetch('https://stgapi.a.farenexushub.com/sandbox-session/v2/createReview',{
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(requests)
+      })
+       const data = await response.json();
+
+       console.log("Booking Response:", data);
+        if(response.ok){
+          alert("Booking successful!");
+          router.push(`/pages/review/${data?.id}`);
+        }else{
+          alert("Booking failed: " + (data?.message || "Unknown error"));
+        }
+    }catch(err){
+      console.error("Booking Error:", err);
+      alert("Booking failed. Please try again.");
+    }
+    // alert("Booking successful! (This is a mock action.)");
   }
   /* =========================
      ✅ TRIGGER API
@@ -291,7 +333,7 @@ const LfsPage = () => {
             </div>
             <div className="mt-2">
               <span>
-                <input type="checkbox" id="terms" name="terms" className='mr-2' />
+                <input type="checkbox" id="terms" name="terms" checked={editBeforeSend} className='mr-2' onChange={(e)=> setEditBeforeSend(e.target.checked)} />
                 <label htmlFor="terms" className='text-sm text-[#868686]'>Edit Before Send</label>
               </span>
               <span className='ml-4 font-bold'>
