@@ -264,7 +264,7 @@ const LfsPage = () => {
 
        console.log("Booking Response:", data);
         if(response.ok){
-          alert("Booking successful!");
+          // alert("Booking successful!");
           router.push(`/pages/review/${data?.id}`);
         }else{
           alert("Booking failed: " + (data?.message || "Unknown error"));
