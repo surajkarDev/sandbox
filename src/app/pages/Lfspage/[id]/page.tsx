@@ -71,6 +71,7 @@ const LfsPage = () => {
   const [selectedFare, setSelectedFare] = useState<FareFamily[]>([]);
   const [tripType, setTripType] = useState<string>("");
   const [editBeforeSend, setEditBeforeSend] = useState<boolean>(false);
+  const [errorLfs, setErrorLfs] = useState<string | null>(null);
   const router = useRouter();
 
   /* =========================
@@ -136,8 +137,13 @@ const LfsPage = () => {
       const data = await response.json();
 
       const result = data?.response?.[0] || null;
+      console.log("ExecuteSearch Result:", result);
+      if(result.status.type === "ERROR"){
+        setErrorLfs(result.error.errorMessage);
+      }else{
       setSearchResult(result);
       setTripType(result?.sowSliceItinerary?.[0]?.sliceItinerary?.[0]?.tripType || "");
+      }
 
     } catch (err) {
       console.error("ExecuteSearch Error:", err);
@@ -445,7 +451,7 @@ const LfsPage = () => {
 
               </div>
           ):(
-            <p>No flight data available</p>
+            <p className="bg-[#e7e7e7] py-[10px] px-[13px] rounded-lg border border-[#ff1414] ml-4">{errorLfs}</p>
           )}
         </div>
       )}

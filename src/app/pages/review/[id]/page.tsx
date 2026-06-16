@@ -20,6 +20,15 @@ type FlightSegmentInfo = {
   flightDuration?: string | number;
   secureFlight?:boolean;
   operatingCarrier?:OperatingCarrier
+  priceClass?: {
+    fareClassType?: string;
+    cabinType?: {
+      cabinTypeName?: string;
+      cabinTypeCode?: string;
+    }[];
+  }[];
+  bookingCode?: string;
+  fareBasisCode?: string;
 };
 
 type OriginDestinationInfo = {
@@ -198,14 +207,14 @@ const ReviewPage = () => {
       <h1 className="text-2xl font-bold px-4 py-4">
         Review Page
       </h1>
-
+    {/* {JSON.stringify(originDestinations)} */}
       {loading ? (
         <div className="px-4">Loading...</div>
       ) : (
         <div className="flex flex-col lg:flex-row gap-4 px-4">
           {/* Left Section */}
           <div className="w-full lg:w-3/4">
-            <div className="flex justify-between items-center p-4 bg-[#f1f1f1] border border-[#ccc]">
+            <div className="flex justify-between items-center p-3 bg-[#f1f1f1] border border-[#ccc]">
               <h2 className="font-semibold">
                 Review Your Itinerary
               </h2>
@@ -316,6 +325,17 @@ const ReviewPage = () => {
                                   {extractTime(flight.arrivalDateTime)}
                                 </span>
                               </div>
+                              <div className="text-right">
+                                <p className="text-sm">
+                                  <b>{flight?.priceClass?.[0]?.fareClassType} {flight.bookingCode}</b>
+                                </p>
+                                <p>
+                                  <small className="bg-[#7c7c7c] p-1 px-2 rounded text-white font-semibold">
+                                    {flight?.priceClass?.[0]?.cabinType?.[0].cabinTypeName} {flight?.priceClass?.[0]?.cabinType?.[0].cabinTypeCode}
+                                  </small>
+                                </p>
+                                <p><small><b>Fare Basis Code :</b> {flight?.fareBasisCode}</small></p>
+                              </div>
                             </div>
                           </div>
                         )
@@ -331,7 +351,7 @@ const ReviewPage = () => {
 
           {/* Right Section */}
           <div className="w-full lg:w-1/4">
-            <div className="p-4 bg-[#f1f1f1] border border-[#ccc]">
+            <div className="p-3 bg-[#f1f1f1] border border-[#ccc]">
               Mandatory : No
             </div>
 
