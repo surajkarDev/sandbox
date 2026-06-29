@@ -51,6 +51,62 @@ type GetReviewResponse = {
 type ReviewResponse = {
   response: string | Review;
 };
+type PassengerDetails = {
+  paxType: string;
+  title: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  gender: string;
+  dateOfBirth: string;
+  programId: string[];
+  membershipId: string[];
+  specialAssistance: string;
+  mealPref: string;
+  servicesInfo: any[];
+  paxWiseFareInfo: any[];
+  billingDetails: Record<string, unknown>;
+  customerDetails: Record<string, unknown>;
+  inBoundFareInfo: Record<string, unknown>;
+  outBoundFareInfo: Record<string, unknown>;
+  referenceId: string;
+  documentType: string;
+  documentNumber: string;
+};
+type BillingDetails = {
+  paymentInfo: {
+    paymentMode: string;
+    card: {
+      code: string;
+      number: string;
+      expiryMonth: string;
+      expiryYear: string;
+      securityId: string;
+      cardHolderName: string;
+      startMonth: string;
+      startYear: string;
+    }[];
+  }[];
+  addressGroup: {
+    streetName: string;
+    houseNo: string;
+    city: string;
+    postalCode: string;
+    countryCode: string;
+    province: string;
+  }[];
+}
+
+type CustomerDetails = {
+  emailAddress: string[];
+  contactInfo: {
+    type: string;
+    number: string;
+    areaCode?: string;
+    countryCode?: string;
+    disableNotification?: boolean;
+  }[];
+}
 
 const extractTime = (dateTimeString?: string): string => {
   if (!dateTimeString) return 'Unknown Time';
@@ -94,6 +150,76 @@ const ReviewPage = () => {
   const [token, setToken] = useState<string | null>(null);
   const [review, setReview] = useState<Review | null>(null);
   const [loading, setLoading] = useState(true);
+  const [paymentType, setPaymentType] = useState("credit-card");
+  const [passengerDetails,setPassengerDetails] = useState<PassengerDetails[]>([
+    {
+    paxType:'ADT',
+    title:'',
+    firstName:'',
+    middleName:'',
+    lastName:'',
+    gender:'',
+    dateOfBirth:'',
+    programId:[""],
+    membershipId:[""],
+    specialAssistance:"",
+    mealPref:"",
+    servicesInfo:[],
+    paxWiseFareInfo:[],
+    billingDetails:{},
+    customerDetails:{},
+    inBoundFareInfo:{},
+    outBoundFareInfo:{},
+    referenceId:"",
+    documentType:"",
+    documentNumber:"",
+  }
+  ]);
+  const [billingDetails,setBillingDetails] = useState<BillingDetails>({
+    paymentInfo: [
+			{
+				paymentMode: "CREDIT_CARD",
+				card: [
+					{
+						code: "",
+						number: "",
+						expiryMonth: "",
+						expiryYear: "",
+						securityId: "",
+						cardHolderName: "",
+						startMonth: "",
+						startYear: ""
+					}
+				]
+			}
+		],
+		addressGroup: [
+			{
+				streetName: "",
+				houseNo: "",
+				city: "",
+				postalCode: "",
+				countryCode: "",
+				province: ""
+			}
+		]
+  })
+  const [customerDetails,setCustomerDetails] = useState<CustomerDetails>({
+    emailAddress: [""],
+		contactInfo: [
+			{
+				type: "PHONE",
+				number: "",
+				areaCode: "",
+				countryCode: "",
+				disableNotification: false
+			},
+			{
+				type: "",
+				number: ""
+			}
+		]
+  })
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
@@ -211,6 +337,7 @@ const ReviewPage = () => {
       {loading ? (
         <div className="px-4">Loading...</div>
       ) : (
+        <>
         <div className="flex flex-col lg:flex-row gap-4 px-4">
           {/* Left Section */}
           <div className="w-full lg:w-3/4">
@@ -360,6 +487,375 @@ const ReviewPage = () => {
             </div>
           </div>
         </div>
+        <div className="bg-[#f5f5f5] min-h-screen p-6">
+          <div className="max-w-[1400px] mx-auto">
+
+            {/* Top Controls */}
+            <div className="flex justify-between items-center mb-4">
+              <select className="border border-gray-300 rounded px-3 py-2 w-64 bg-white">
+                <option>Select Test Case</option>
+              </select>
+
+              <label className="flex items-center gap-2">
+                <input type="checkbox" />
+                <span>Multiple Form of Payment</span>
+              </label>
+            </div>
+
+            {/* Passenger Section */}
+            <div className="border bg-white rounded">
+              <div className="inline-block bg-gray-200 px-3 py-1 border-r border-b text-sm font-medium">
+                Passenger, 1 (Adult | Priced Adult)
+              </div>
+              {JSON.stringify(passengerDetails)}
+              <div className="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                {/* Left */}
+                <div>
+                  <div className="grid grid-cols-4 gap-3">
+                    <div>
+                      <label className="text-sm">Title *</label>
+                      <select className="w-full border p-2 rounded" value={passengerDetails[0].title} onChange={(e) => {
+                        const updatedDetails = [...passengerDetails];
+                        updatedDetails[0].title = e.target.value;
+                        setPassengerDetails(updatedDetails);
+                      }}>
+                        <option value="">Select</option>
+                        <option value="Mr">Mr</option>
+                        <option value="Mrs">Mrs</option>
+                        <option value="Ms">Ms</option>
+                        <option value="Dr">Dr</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-sm">First Name *</label>
+                      <input
+                        className="w-full border p-2 rounded"
+                        placeholder="First Name"
+                        value={passengerDetails[0].firstName}
+                        onChange={(e) => {
+                          const updatedDetails = [...passengerDetails];
+                          updatedDetails[0].firstName = e.target.value;
+                          setPassengerDetails(updatedDetails);
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm">Middle Name</label>
+                      <input
+                        className="w-full border p-2 rounded"
+                        placeholder="Middle Name"
+                        value={passengerDetails[0].middleName}
+                        onChange={(e) => {
+                          const updatedDetails = [...passengerDetails];
+                          updatedDetails[0].middleName = e.target.value;
+                          setPassengerDetails(updatedDetails);
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm">Last Name *</label>
+                      <input
+                        className="w-full border p-2 rounded"
+                        placeholder="Last Name"
+                        value={passengerDetails[0].lastName}
+                        onChange={(e) => {
+                          const updatedDetails = [...passengerDetails];
+                          updatedDetails[0].lastName = e.target.value;
+                          setPassengerDetails(updatedDetails);
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3 mt-4">
+                    <div>
+                      <label className="text-sm">Gender *</label>
+                      <select className="w-full border p-2 rounded"
+                        value={passengerDetails[0].gender}
+                        onChange={(e) => {
+                          const updatedDetails = [...passengerDetails];
+                          updatedDetails[0].gender = e.target.value;
+                          setPassengerDetails(updatedDetails);
+                        }}
+                      >
+                        <option value="">Select</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                        <option value="O">Other</option>
+                      </select>
+                    </div>
+
+                    <div className="col-span-2">
+                      <label className="text-sm">Date Of Birth *</label>
+
+                      <div className="flex gap-2">
+                        <select className="border p-2 rounded">
+                          <option>01</option>
+                        </select>
+
+                        <select className="border p-2 rounded">
+                          <option>Jan</option>
+                        </select>
+
+                        <select className="border p-2 rounded">
+                          <option>1997</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right */}
+                <div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-sm">Aeroplan</label>
+                      <select className="w-full border p-2 rounded">
+                        <option>Select</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-sm">Aeroplan Number</label>
+                      <input
+                        className="w-full border p-2 rounded"
+                        placeholder="Aeroplan Number"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm">Document Type</label>
+                      <select className="w-full border p-2 rounded">
+                        <option>Select Type</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-sm">Document Number</label>
+                      <input
+                        className="w-full border p-2 rounded"
+                        placeholder="Enter Document Number"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 mt-5">
+                    <div className="border bg-blue-50 p-4 text-center font-semibold">
+                      YUL to YVR : NA
+                    </div>
+
+                    <div className="border bg-blue-50 p-4 text-center font-semibold">
+                      YVR to YUL : NA
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Payment Information */}
+            <div className="border bg-white rounded mt-5">
+              <div className="inline-block bg-gray-200 px-3 py-1 border-r border-b font-medium">
+                Payment Information
+              </div>
+
+              <div className="p-5">
+
+                {/* Tabs */}
+                <div className="flex justify-center mb-6">
+                  <div className="flex border rounded overflow-hidden">
+                    <button
+                      className="px-6 py-2 border-r"
+                      onClick={() => setPaymentType("hold")}
+                    >
+                      On-Hold Booking
+                    </button>
+
+                    <button
+                      className={`px-6 py-2 border-r ${
+                        paymentType === "credit-card"
+                          ? "bg-gray-100"
+                          : ""
+                      }`}
+                      onClick={() => setPaymentType("credit-card")}
+                    >
+                      Credit Card
+                    </button>
+
+                    <button
+                      className="px-6 py-2"
+                      onClick={() => setPaymentType("cash")}
+                    >
+                      Cash
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+
+                  <div>
+                    <label>Card Type *</label>
+                    <select className="w-full border p-2 rounded">
+                      <option>VISA International</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label>Card Holder Name *</label>
+                    <input
+                      className="w-full border p-2 rounded"
+                      defaultValue="Test"
+                    />
+                  </div>
+
+                  <div>
+                    <label>Card Number *</label>
+                    <input
+                      className="w-full border p-2 rounded"
+                      defaultValue="4012999999999999"
+                    />
+                  </div>
+
+                  <div>
+                    <label>Address Line 1 *</label>
+                    <input
+                      className="w-full border p-2 rounded"
+                      defaultValue="111"
+                    />
+                  </div>
+
+                  <div>
+                    <label>Country *</label>
+                    <select className="w-full border p-2 rounded">
+                      <option>Canada</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-6 gap-4 mt-4">
+
+                  <div>
+                    <label>CVV</label>
+                    <input
+                      className="w-full border p-2 rounded"
+                      defaultValue="737"
+                    />
+                  </div>
+
+                  <div>
+                    <label>Expiry Month *</label>
+                    <select className="w-full border p-2 rounded">
+                      <option>Jan (01)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label>Expiry Year *</label>
+                    <select className="w-full border p-2 rounded">
+                      <option>2030</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label>City *</label>
+                    <input
+                      className="w-full border p-2 rounded"
+                      defaultValue="Montreal"
+                    />
+                  </div>
+
+                  <div>
+                    <label>Province *</label>
+                    <select className="w-full border p-2 rounded">
+                      <option>Quebec</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label>Postal Code *</label>
+                    <input
+                      className="w-full border p-2 rounded"
+                      defaultValue="H2J3K4"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Information */}
+            <div className="border bg-white rounded mt-5">
+              <div className="inline-block bg-gray-200 px-3 py-1 border-r border-b font-medium">
+                Contact Information
+              </div>
+
+              <div className="p-5 grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label>Country Code *</label>
+                    <input
+                      className="w-full border p-2 rounded"
+                      defaultValue="1"
+                    />
+                  </div>
+
+                  <div>
+                    <label>Phone Number *</label>
+                    <input
+                      className="w-full border p-2 rounded"
+                      placeholder="(XXX)-XXX-XXXX"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="flex items-center gap-2 mb-3">
+                    <input type="checkbox" />
+                    Disable Email Receipt to Passenger
+                  </label>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <input
+                      className="border p-2 rounded"
+                      placeholder="Email Address"
+                    />
+
+                    <input
+                      className="border p-2 rounded"
+                      placeholder="Travel Agency Email"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex justify-end items-center gap-4 mt-5">
+              <label className="flex items-center gap-2">
+                <input type="checkbox" />
+                Include 3DSv2 Information
+              </label>
+
+              <label className="flex items-center gap-2">
+                <input type="checkbox" />
+                Save as Test Case
+              </label>
+
+              <label className="flex items-center gap-2">
+                <input type="checkbox" />
+                Edit Before Send
+              </label>
+
+              <button className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700">
+                Confirm Booking
+              </button>
+            </div>
+          </div>
+        </div>
+        </>
       )}
     </div>
   );
