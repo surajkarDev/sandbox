@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import DatePickerSelect from '@/app/components/DatePickerSelect/page';
 
 type OperatingCarrier = {
   code?: string;
@@ -140,6 +141,115 @@ const formatDuration = (
   return `${hours}h ${minutes}m`;
 };
 
+// Aeroplan Programs Data
+const AEROPLAN_PROGRAMS_NDC_AC = [
+  { code: 'AC', name: 'Air Canada' },
+  { code: 'A3', name: 'Aegean Airlines' },
+  { code: 'CA', name: 'Air China' },
+  { code: 'AI', name: 'Air India' },
+  { code: 'NZ', name: 'Air New Zealand' },
+  { code: 'NH', name: 'ANA Mileage Club' },
+  { code: 'OZ', name: 'Asiana Airlines' },
+  { code: 'OS', name: 'Australian Airlines - Miles and More' },
+  { code: 'AV', name: 'Avianca Airlines' },
+  { code: 'AD', name: 'Azul Airlines - TudoAzul' },
+  { code: 'SN', name: 'Brussels Airlines' },
+  { code: 'CX', name: 'Cathay Pacific' },
+  { code: 'CM', name: 'Copa Airlines - ConnectMiles' },
+  { code: 'OU', name: 'Croatia Airlines' },
+  { code: 'MS', name: 'Egypt Plus' },
+  { code: 'EY', name: 'Etihad Airways' },
+  { code: 'BR', name: 'EVA Air' },
+  { code: 'ET', name: 'Ethiopian Airlines' },
+  { code: 'G3', name: 'GOL Linhas Aéreas' },
+  { code: 'HO', name: 'Juneyao Airlines' },
+  { code: 'LO', name: 'LOT Polish Airlines' },
+  { code: 'LH', name: 'Lufthansa Miles' },
+  { code: 'OA', name: 'Olympic Air - Miles+Bonus' },
+  { code: 'LX', name: 'SWISS - Miles & More' },
+  { code: 'SK', name: 'Scandinavian Airlines' },
+  { code: 'ZH', name: 'Shenzhen Airlines' },
+  { code: 'SQ', name: 'Singapore Airlines' },
+  { code: 'SA', name: 'South African Airlines' },
+  { code: 'TP', name: 'TAP Air Portugal' },
+  { code: 'TG', name: 'Thai Airways' },
+  { code: 'TK', name: 'Turkish Airlines' },
+  { code: 'UA', name: 'United Airlines' },
+  { code: 'VA', name: 'Virgin Australia - Velocity' },
+  { code: 'UK', name: 'Vistara - Club Vistara' },
+];
+
+const AEROPLAN_PROGRAMS_OTHER = [
+  { code: 'EI', name: 'Aerlingsus Travel Award' },
+  { code: 'AR', name: 'Aerolineas Argentinas' },
+  { code: 'AM', name: 'AeroMexico Club' },
+  { code: 'VV', name: 'Aerosvit Meridian' },
+  { code: 'AC', name: 'Air Canada Airline' },
+  { code: 'WS', name: 'WestJet Rewards' },
+  { code: 'AF', name: 'Air France Frequence' },
+  { code: 'AI', name: 'Air India Flight Returns' },
+  { code: 'JM', name: 'Air Jamaica Heaven' },
+  { code: 'MK', name: 'Air Mauritius' },
+  { code: 'NZ', name: 'Air New Zealand Points' },
+  { code: 'FJ', name: 'Air Pacific Tabua' },
+  { code: 'FL', name: 'AirTran Plus Rewards' },
+  { code: 'AS', name: 'Alaska Airlines Mileage' },
+  { code: 'AZ', name: 'Alitalia Club' },
+  { code: 'NH', name: 'All Nippon Airways' },
+  { code: 'AQ', name: 'Aloha Airways' },
+  { code: 'HP', name: 'America West Flight Fund' },
+  { code: 'AA', name: 'American Airlines AAdvantage' },
+  { code: 'OZ', name: 'Asiana Club' },
+  { code: 'TZ', name: 'ATA Travel Award' },
+  { code: 'OS', name: 'Austrian Airlines Miles' },
+  { code: 'AV', name: 'Avianca Plus' },
+  { code: 'BD', name: 'BMI Diamond Club' },
+  { code: 'BA', name: 'British Airways Executive' },
+  { code: 'CX', name: 'Cathay Pacific Airways' },
+  { code: 'CI', name: 'China Airlines Dynasty' },
+  { code: 'MU', name: 'China Eastern Airlines' },
+  { code: 'CO', name: 'Continental OnePass' },
+  { code: 'DL', name: 'Delta Airlines Sky' },
+  { code: 'LY', name: 'EL AL Israel Airlines' },
+  { code: 'BR', name: 'EVA Evergreen Club' },
+  { code: 'AY', name: 'Finnair Plus' },
+  { code: 'F9', name: 'Frontier Early Returns' },
+  { code: 'GF', name: 'Gulfair Frequent Flyer' },
+  { code: 'HA', name: 'Hawaiian Airlines' },
+  { code: 'IB', name: 'Iberia Plus' },
+  { code: 'FI', name: 'Iceland Air Customer' },
+  { code: 'DH', name: 'Independence Air Club' },
+  { code: 'JL', name: 'Japan Airlines JAL Mileage' },
+  { code: '9W', name: 'Jet Airways Privilege' },
+  { code: 'B6', name: 'JetBlue TrueBlue' },
+  { code: 'IT', name: 'Kingfisher Club' },
+  { code: 'KL', name: 'KLM Flying Chairman' },
+  { code: 'KE', name: 'Korean Airlines' },
+  { code: 'LA', name: 'LAN LanPass' },
+  { code: 'LO', name: 'LOT Miles' },
+  { code: 'LT', name: 'LTU Red Points' },
+  { code: 'LH', name: 'Lufthansa Miles More' },
+  { code: 'MH', name: 'Malaysia Airlines' },
+  { code: 'MX', name: 'Mexicana Frequenta' },
+  { code: 'YX', name: 'Midwest Airlines' },
+  { code: 'NW', name: 'North West Airlines' },
+  { code: 'OA', name: 'Olympic Airways Icarus' },
+  { code: 'PR', name: 'Philippine Airlines' },
+  { code: 'QF', name: 'Qantas Frequent Flyer' },
+  { code: 'AT', name: 'Royal Air Maroc Safari Flyer' },
+  { code: 'BU', name: 'SAS EuroBonus' },
+  { code: 'SQ', name: 'Singapore Airlines Kris Flyer' },
+  { code: 'SA', name: 'South African Airways Voyager' },
+  { code: 'WN', name: 'Southwest Airlines Rapid Rewards' },
+  { code: 'LX', name: 'SWISS Travel Club' },
+  { code: 'TP', name: 'TAP Air Portugal Navigator' },
+  { code: 'TG', name: 'Thai Royal Orchid' },
+  { code: 'TK', name: 'Turkish Airlines Miles' },
+  { code: 'UA', name: 'United Airlines Mileage' },
+  { code: 'US', name: 'US Airways Dividend' },
+  { code: 'VS', name: 'Virgin Atlantic Flying' },
+];
+
 const ReviewPage = () => {
   const params = useParams();
 
@@ -151,6 +261,8 @@ const ReviewPage = () => {
   const [review, setReview] = useState<Review | null>(null);
   const [loading, setLoading] = useState(true);
   const [paymentType, setPaymentType] = useState("credit-card");
+  const [aeroplanPrograms, setAeroplanPrograms] = useState(AEROPLAN_PROGRAMS_OTHER);
+  const [selectedAeroplan, setSelectedAeroplan] = useState("");
   const [passengerDetails,setPassengerDetails] = useState<PassengerDetails[]>([
     {
     paxType:'ADT',
@@ -301,6 +413,17 @@ const ReviewPage = () => {
             : reviewResult.response;
 
         setReview(reviewData);
+
+        // Determine which Aeroplan programs list to use based on review data
+        // You can adjust this logic based on your actual review response structure
+        const isNDCExchange = (reviewData as any)?.status?.gdsType === 'NDCEXCHANGE';
+        const isAirlineAC = (reviewData as any)?.status?.airlineSource === 'AC';
+        
+        if (isNDCExchange && isAirlineAC) {
+          setAeroplanPrograms(AEROPLAN_PROGRAMS_NDC_AC);
+        } else {
+          setAeroplanPrograms(AEROPLAN_PROGRAMS_OTHER);
+        }
       } catch (error) {
         console.error(
           'Error fetching review data:',
@@ -589,10 +712,10 @@ const ReviewPage = () => {
                       </select>
                     </div>
 
-                    <div className="col-span-2">
-                      <label className="text-sm">Date Of Birth *</label>
+                    <div className="col-span-2 dateofbirth">
+                      {/* <label className="text-sm">Date Of Birth *</label> */}
 
-                      <div className="flex gap-2">
+                      {/* <div className="flex gap-2">
                         <select className="border p-2 rounded">
                           <option>01</option>
                         </select>
@@ -604,7 +727,18 @@ const ReviewPage = () => {
                         <select className="border p-2 rounded">
                           <option>1997</option>
                         </select>
-                      </div>
+                      </div> */}
+                      <DatePickerSelect
+                        label="Date Of Birth"
+                        initialDate={{ day: '01', month: 'Jan', year: '1997' }}
+                        onDateChange={(date) => {
+                          console.log('Selected date:', date);
+                          const updatedDetails = [...passengerDetails];
+                          updatedDetails[0].dateOfBirth = date.year+'-'+ date.month+'-'+date.day;
+                          setPassengerDetails(updatedDetails);
+                          // Update your state here
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -614,8 +748,22 @@ const ReviewPage = () => {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="text-sm">Aeroplan</label>
-                      <select className="w-full border p-2 rounded">
-                        <option>Select</option>
+                      <select 
+                        className="w-full border p-2 rounded"
+                        value={selectedAeroplan}
+                        onChange={(e) => {
+                          setSelectedAeroplan(e.target.value);
+                          const updatedDetails = [...passengerDetails];
+                          updatedDetails[0].programId = [e.target.value];
+                          setPassengerDetails(updatedDetails);
+                        }}
+                      >
+                        <option value="">Select</option>
+                        {aeroplanPrograms.map((program) => (
+                          <option key={program.code} value={program.code}>
+                            {program.name}
+                          </option>
+                        ))}
                       </select>
                     </div>
 
@@ -624,13 +772,34 @@ const ReviewPage = () => {
                       <input
                         className="w-full border p-2 rounded"
                         placeholder="Aeroplan Number"
+                        value={passengerDetails[0].membershipId?.[0] || ""}
+                        onChange={(e) => {
+                          const updatedDetails = [...passengerDetails];
+                          updatedDetails[0].membershipId = [e.target.value];
+                          setPassengerDetails(updatedDetails);
+                        }}
                       />
                     </div>
 
                     <div>
                       <label className="text-sm">Document Type</label>
-                      <select className="w-full border p-2 rounded">
-                        <option>Select Type</option>
+                      <select 
+                        className="w-full border p-2 rounded"
+                        value={passengerDetails[0].documentType}
+                        onChange={(e) => {
+                          const updatedDetails = [...passengerDetails];
+                          updatedDetails[0].documentType = e.target.value;
+                          setPassengerDetails(updatedDetails);
+                        }}
+                      >
+                        <option value="">Select Type</option>
+                        <option value="Passport">Passport</option>
+                        <option value="Redress Number">Redress Number</option>
+                        <option value="US Passport">US Passport</option>
+                        <option value="US Alien Card">US Alien Card</option>
+                        <option value="CA Resident Card">CA Resident Card</option>
+                        <option value="Nexus">Nexus</option>
+                        <option value="E-Passport">E-Passport</option>
                       </select>
                     </div>
 
@@ -639,6 +808,12 @@ const ReviewPage = () => {
                       <input
                         className="w-full border p-2 rounded"
                         placeholder="Enter Document Number"
+                        value={passengerDetails[0].documentNumber}
+                        onChange={(e) => {
+                          const updatedDetails = [...passengerDetails];
+                          updatedDetails[0].documentNumber = e.target.value;
+                          setPassengerDetails(updatedDetails);
+                        }}
                       />
                     </div>
                   </div>
