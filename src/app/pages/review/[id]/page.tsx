@@ -630,7 +630,6 @@ const ReviewPage = () => {
               <div className="inline-block bg-gray-200 px-3 py-1 border-r border-b text-sm font-medium">
                 Passenger, 1 (Adult | Priced Adult)
               </div>
-              {JSON.stringify(passengerDetails)}
               <div className="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                 {/* Left */}
@@ -843,7 +842,11 @@ const ReviewPage = () => {
                 <div className="flex justify-center mb-6">
                   <div className="flex border rounded overflow-hidden">
                     <button
-                      className="px-6 py-2 border-r"
+                      className={`px-6 py-2 border-r ${
+                        paymentType === "hold"
+                          ? "bg-gray-100"
+                          : ""
+                      }`}
                       onClick={() => setPaymentType("hold")}
                     >
                       On-Hold Booking
@@ -861,102 +864,112 @@ const ReviewPage = () => {
                     </button>
 
                     <button
-                      className="px-6 py-2"
+                      className={`px-6 py-2 ${
+                        paymentType === "cash"
+                          ? "bg-gray-100"
+                          : ""
+                      }`}
                       onClick={() => setPaymentType("cash")}
                     >
                       Cash
                     </button>
                   </div>
                 </div>
+                {
+                  paymentType === "credit-card" && (
+                    <>
+                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
 
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                      <div>
+                        <label>Card Type *</label>
+                        <select className="w-full border p-2 rounded">
+                          <option>VISA International</option>
+                        </select>
+                      </div>
 
-                  <div>
-                    <label>Card Type *</label>
-                    <select className="w-full border p-2 rounded">
-                      <option>VISA International</option>
-                    </select>
-                  </div>
+                      <div>
+                        <label>Card Holder Name *</label>
+                        <input
+                          className="w-full border p-2 rounded"
+                          defaultValue="Test"
+                        />
+                      </div>
 
-                  <div>
-                    <label>Card Holder Name *</label>
-                    <input
-                      className="w-full border p-2 rounded"
-                      defaultValue="Test"
-                    />
-                  </div>
+                      <div>
+                        <label>Card Number *</label>
+                        <input
+                          className="w-full border p-2 rounded"
+                          defaultValue="4012999999999999"
+                        />
+                      </div>
 
-                  <div>
-                    <label>Card Number *</label>
-                    <input
-                      className="w-full border p-2 rounded"
-                      defaultValue="4012999999999999"
-                    />
-                  </div>
+                      <div>
+                        <label>Address Line 1 *</label>
+                        <input
+                          className="w-full border p-2 rounded"
+                          defaultValue="111"
+                        />
+                      </div>
 
-                  <div>
-                    <label>Address Line 1 *</label>
-                    <input
-                      className="w-full border p-2 rounded"
-                      defaultValue="111"
-                    />
-                  </div>
+                      <div>
+                        <label>Country *</label>
+                        <select className="w-full border p-2 rounded">
+                          <option>Canada</option>
+                        </select>
+                      </div>
+                    </div>
 
-                  <div>
-                    <label>Country *</label>
-                    <select className="w-full border p-2 rounded">
-                      <option>Canada</option>
-                    </select>
-                  </div>
-                </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-6 gap-4 mt-4">
 
-                <div className="grid grid-cols-1 lg:grid-cols-6 gap-4 mt-4">
+                      <div>
+                        <label>CVV</label>
+                        <input
+                          className="w-full border p-2 rounded"
+                          defaultValue="737"
+                        />
+                      </div>
 
-                  <div>
-                    <label>CVV</label>
-                    <input
-                      className="w-full border p-2 rounded"
-                      defaultValue="737"
-                    />
-                  </div>
+                      <div>
+                        <label>Expiry Month *</label>
+                        <select className="w-full border p-2 rounded">
+                          <option>Jan (01)</option>
+                        </select>
+                      </div>
 
-                  <div>
-                    <label>Expiry Month *</label>
-                    <select className="w-full border p-2 rounded">
-                      <option>Jan (01)</option>
-                    </select>
-                  </div>
+                      <div>
+                        <label>Expiry Year *</label>
+                        <select className="w-full border p-2 rounded">
+                          <option>2030</option>
+                        </select>
+                      </div>
 
-                  <div>
-                    <label>Expiry Year *</label>
-                    <select className="w-full border p-2 rounded">
-                      <option>2030</option>
-                    </select>
-                  </div>
+                      <div>
+                        <label>City *</label>
+                        <input
+                          className="w-full border p-2 rounded"
+                          defaultValue="Montreal"
+                        />
+                      </div>
 
-                  <div>
-                    <label>City *</label>
-                    <input
-                      className="w-full border p-2 rounded"
-                      defaultValue="Montreal"
-                    />
-                  </div>
+                      <div>
+                        <label>Province *</label>
+                        <select className="w-full border p-2 rounded">
+                          <option>Quebec</option>
+                        </select>
+                      </div>
 
-                  <div>
-                    <label>Province *</label>
-                    <select className="w-full border p-2 rounded">
-                      <option>Quebec</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label>Postal Code *</label>
-                    <input
-                      className="w-full border p-2 rounded"
-                      defaultValue="H2J3K4"
-                    />
-                  </div>
-                </div>
+                      <div>
+                        <label>Postal Code *</label>
+                        <input
+                          className="w-full border p-2 rounded"
+                          defaultValue="H2J3K4"
+                        />
+                      </div>
+                    </div>
+                    </>
+                  )
+                }
+                
               </div>
             </div>
 
