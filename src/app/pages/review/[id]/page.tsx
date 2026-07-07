@@ -875,6 +875,7 @@ const ReviewPage = () => {
                     </button>
                   </div>
                 </div>
+                {JSON.stringify(billingDetails.paymentInfo[0].card[0])}
                 {
                   paymentType === "credit-card" && (
                     <>
@@ -882,8 +883,15 @@ const ReviewPage = () => {
 
                       <div>
                         <label>Card Type *</label>
-                        <select className="w-full border p-2 rounded">
-                          <option>VISA International</option>
+                        <select className="w-full border p-2 rounded" value={billingDetails.paymentInfo[0].card[0].code} onChange={(e) => {
+                          const updatedBilling = { ...billingDetails };
+                          updatedBilling.paymentInfo[0].card[0].code = e.target.value;
+                          setBillingDetails(updatedBilling);
+                        }}>
+                          <option value="">Select</option>
+                          <option value="VI">VISA</option>
+                          <option value="MC">MASTERCARD</option>
+                          <option value="AMEX">AMEX</option>
                         </select>
                       </div>
 
@@ -891,7 +899,12 @@ const ReviewPage = () => {
                         <label>Card Holder Name *</label>
                         <input
                           className="w-full border p-2 rounded"
-                          defaultValue="Test"
+                          value={billingDetails.paymentInfo[0].card[0].cardHolderName}
+                          onChange={(e) => {
+                            const updatedBilling = { ...billingDetails };
+                            updatedBilling.paymentInfo[0].card[0].cardHolderName = e.target.value;
+                            setBillingDetails(updatedBilling);
+                          }}
                         />
                       </div>
 
@@ -899,7 +912,12 @@ const ReviewPage = () => {
                         <label>Card Number *</label>
                         <input
                           className="w-full border p-2 rounded"
-                          defaultValue="4012999999999999"
+                          value={billingDetails.paymentInfo[0].card[0].number}
+                          onChange={(e)=>{
+                            const updatedBilling = {...billingDetails};
+                            updatedBilling.paymentInfo[0].card[0].number = e.target.value;
+                            setBillingDetails(updatedBilling);
+                          }}
                         />
                       </div>
 
@@ -925,20 +943,50 @@ const ReviewPage = () => {
                         <label>CVV</label>
                         <input
                           className="w-full border p-2 rounded"
-                          defaultValue="737"
+                          value={billingDetails.paymentInfo[0].card[0].securityId}
+                          onChange={(e)=>{
+                            const updatedBilling = {...billingDetails};
+                            updatedBilling.paymentInfo[0].card[0].securityId = e.target.value;
+                            setBillingDetails(updatedBilling);
+                          }}
                         />
                       </div>
 
                       <div>
                         <label>Expiry Month *</label>
-                        <select className="w-full border p-2 rounded">
+                        <select className="w-full border p-2 rounded" value={billingDetails.paymentInfo[0].card[0].expiryMonth} onChange={(e)=>{
+                          const updatedBilling = {...billingDetails};
+                          updatedBilling.paymentInfo[0].card[0].expiryMonth = e.target.value;
+                          setBillingDetails(updatedBilling);
+                        }}>
                           <option>Jan (01)</option>
+                          <option>Feb (02)</option>
+                          <option>Mar (03)</option>
+                          <option>Apr (04)</option>
+                          <option>May (05)</option>
+                          <option>Jun (06)</option>
+                          <option>Jul (07)</option>
+                          <option>Aug (08)</option>
+                          <option>Sep (09)</option>
+                          <option>Oct (10)</option>
+                          <option>Nov (11)</option>
+                          <option>Dec (12)</option>
                         </select>
                       </div>
 
                       <div>
                         <label>Expiry Year *</label>
-                        <select className="w-full border p-2 rounded">
+                        <select className="w-full border p-2 rounded" value={billingDetails.paymentInfo[0].card[0].expiryYear} onChange={(e)=>{
+                          const updatedBilling = {...billingDetails};
+                          updatedBilling.paymentInfo[0].card[0].expiryYear = e.target.value;
+                          setBillingDetails(updatedBilling);
+                        }}>
+                          <option>2024</option>
+                          <option>2025</option>
+                          <option>2026</option>
+                          <option>2027</option>
+                          <option>2028</option>
+                          <option>2029</option>
                           <option>2030</option>
                         </select>
                       </div>
