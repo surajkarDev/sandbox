@@ -99,7 +99,8 @@ type BillingDetails = {
 }
 
 type CustomerDetails = {
-  emailAddress: string[];
+  emailAddress: string;
+  travelAgencyEmail: string;
   contactInfo: {
     type: string;
     number: string;
@@ -317,7 +318,8 @@ const ReviewPage = () => {
 		]
   })
   const [customerDetails,setCustomerDetails] = useState<CustomerDetails>({
-    emailAddress: [""],
+    emailAddress: "",
+    travelAgencyEmail: "",
 		contactInfo: [
 			{
 				type: "PHONE",
@@ -875,143 +877,180 @@ const ReviewPage = () => {
                     </button>
                   </div>
                 </div>
-                {JSON.stringify(billingDetails.paymentInfo[0].card[0])}
+                {/* {JSON.stringify(billingDetails.paymentInfo[0].card[0])}
+                {JSON.stringify(billingDetails.addressGroup[0])}
+                {JSON.stringify(customerDetails)} */}
                 {
                   paymentType === "credit-card" && (
                     <>
-                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="border p-4">
+                          <div className="grid grid-cols-3 gap-4">
+                            <div>
+                              <label>Card Type *</label>
+                              <select className="w-full border p-2 rounded" value={billingDetails.paymentInfo[0].card[0].code} onChange={(e) => {
+                                const updatedBilling = { ...billingDetails };
+                                updatedBilling.paymentInfo[0].card[0].code = e.target.value;
+                                setBillingDetails(updatedBilling);
+                              }}>
+                                <option value="">Select</option>
+                                <option value="VI">VISA</option>
+                                <option value="MC">MASTERCARD</option>
+                                <option value="AMEX">AMEX</option>
+                              </select>
+                            </div>
 
-                      <div>
-                        <label>Card Type *</label>
-                        <select className="w-full border p-2 rounded" value={billingDetails.paymentInfo[0].card[0].code} onChange={(e) => {
-                          const updatedBilling = { ...billingDetails };
-                          updatedBilling.paymentInfo[0].card[0].code = e.target.value;
-                          setBillingDetails(updatedBilling);
-                        }}>
-                          <option value="">Select</option>
-                          <option value="VI">VISA</option>
-                          <option value="MC">MASTERCARD</option>
-                          <option value="AMEX">AMEX</option>
-                        </select>
+                            <div>
+                              <label>Card Holder Name *</label>
+                              <input
+                                className="w-full border p-2 rounded"
+                                value={billingDetails.paymentInfo[0].card[0].cardHolderName}
+                                onChange={(e) => {
+                                  const updatedBilling = { ...billingDetails };
+                                  updatedBilling.paymentInfo[0].card[0].cardHolderName = e.target.value;
+                                  setBillingDetails(updatedBilling);
+                                }}
+                              />
+                            </div>
+                            
+                            <div>
+                              <label>Card Number *</label>
+                              <input
+                                className="w-full border p-2 rounded"
+                                value={billingDetails.paymentInfo[0].card[0].number}
+                                onChange={(e)=>{
+                                  const updatedBilling = {...billingDetails};
+                                  updatedBilling.paymentInfo[0].card[0].number = e.target.value;
+                                  setBillingDetails(updatedBilling);
+                                }}
+                              />
+                            </div>
+
+                            <div>
+                              <label>CVV</label>
+                              <input
+                                className="w-full border p-2 rounded"
+                                value={billingDetails.paymentInfo[0].card[0].securityId}
+                                onChange={(e)=>{
+                                  const updatedBilling = {...billingDetails};
+                                  updatedBilling.paymentInfo[0].card[0].securityId = e.target.value;
+                                  setBillingDetails(updatedBilling);
+                                }}
+                              />
+                            </div>
+
+                            <div>
+                              <label>Expiry Month *</label>
+                              <select className="w-full border p-2 rounded" value={billingDetails.paymentInfo[0].card[0].expiryMonth} onChange={(e)=>{
+                                const updatedBilling = {...billingDetails};
+                                updatedBilling.paymentInfo[0].card[0].expiryMonth = e.target.value;
+                                setBillingDetails(updatedBilling);
+                              }}>
+                                <option>Jan (01)</option>
+                                <option>Feb (02)</option>
+                                <option>Mar (03)</option>
+                                <option>Apr (04)</option>
+                                <option>May (05)</option>
+                                <option>Jun (06)</option>
+                                <option>Jul (07)</option>
+                                <option>Aug (08)</option>
+                                <option>Sep (09)</option>
+                                <option>Oct (10)</option>
+                                <option>Nov (11)</option>
+                                <option>Dec (12)</option>
+                              </select>
+                            </div>
+
+                            <div>
+                              <label>Expiry Year *</label>
+                              <select className="w-full border p-2 rounded" value={billingDetails.paymentInfo[0].card[0].expiryYear} onChange={(e)=>{
+                                const updatedBilling = {...billingDetails};
+                                updatedBilling.paymentInfo[0].card[0].expiryYear = e.target.value;
+                                setBillingDetails(updatedBilling);
+                              }}>
+                                <option>2024</option>
+                                <option>2025</option>
+                                <option>2026</option>
+                                <option>2027</option>
+                                <option>2028</option>
+                                <option>2029</option>
+                                <option>2030</option>
+                              </select>
+                            </div>
+
+                          </div>
                       </div>
+                      <div className="border p-4">
+                        <div className="grid grid-cols-3 gap-4">
+                          <div>
+                            <label>Address Line 1 *</label>
+                            <input
+                              className="w-full border p-2 rounded"
+                              defaultValue="111"
+                              onChange={(e)=>{
+                                const updatedBilling = {...billingDetails};
+                                updatedBilling.addressGroup[0].streetName = e.target.value;
+                                setBillingDetails(updatedBilling);
+                              }}
+                            />
+                          </div>
 
-                      <div>
-                        <label>Card Holder Name *</label>
-                        <input
-                          className="w-full border p-2 rounded"
-                          value={billingDetails.paymentInfo[0].card[0].cardHolderName}
-                          onChange={(e) => {
-                            const updatedBilling = { ...billingDetails };
-                            updatedBilling.paymentInfo[0].card[0].cardHolderName = e.target.value;
-                            setBillingDetails(updatedBilling);
-                          }}
-                        />
-                      </div>
+                          <div>
+                            <label>Country *</label>
+                            <select className="w-full border p-2 rounded" 
+                            onChange={(e)=>{
+                              const updatedBilling = {...billingDetails};
+                              updatedBilling.addressGroup[0].countryCode = e.target.value;
+                              setBillingDetails(updatedBilling);
+                            }}
+                            >
+                              <option>Canada</option>
+                              <option>United States</option>
+                            </select>
+                          </div>
 
-                      <div>
-                        <label>Card Number *</label>
-                        <input
-                          className="w-full border p-2 rounded"
-                          value={billingDetails.paymentInfo[0].card[0].number}
-                          onChange={(e)=>{
-                            const updatedBilling = {...billingDetails};
-                            updatedBilling.paymentInfo[0].card[0].number = e.target.value;
-                            setBillingDetails(updatedBilling);
-                          }}
-                        />
-                      </div>
+                          <div>
+                            <label>City *</label>
+                            <input
+                              className="w-full border p-2 rounded"
+                              defaultValue="Montreal"
+                              onChange={(e)=>{
+                                const updatedBilling = {...billingDetails};
+                                updatedBilling.addressGroup[0].city = e.target.value;
+                                setBillingDetails(updatedBilling);
+                              }}
+                            />
+                          </div>
 
-                      <div>
-                        <label>Address Line 1 *</label>
-                        <input
-                          className="w-full border p-2 rounded"
-                          defaultValue="111"
-                        />
-                      </div>
+                          <div>
+                            <label>Province *</label>
+                            <select className="w-full border p-2 rounded" 
+                              onChange={(e)=>{
+                                const updatedBilling = {...billingDetails};
+                                updatedBilling.addressGroup[0].province = e.target.value;
+                                setBillingDetails(updatedBilling);
+                              }}
+                            >
+                              <option>Quebec</option>
+                              <option>Ontario</option>
+                              <option>British Columbia</option>
+                              <option>Alberta</option>
+                            </select>
+                          </div>
 
-                      <div>
-                        <label>Country *</label>
-                        <select className="w-full border p-2 rounded">
-                          <option>Canada</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-6 gap-4 mt-4">
-
-                      <div>
-                        <label>CVV</label>
-                        <input
-                          className="w-full border p-2 rounded"
-                          value={billingDetails.paymentInfo[0].card[0].securityId}
-                          onChange={(e)=>{
-                            const updatedBilling = {...billingDetails};
-                            updatedBilling.paymentInfo[0].card[0].securityId = e.target.value;
-                            setBillingDetails(updatedBilling);
-                          }}
-                        />
-                      </div>
-
-                      <div>
-                        <label>Expiry Month *</label>
-                        <select className="w-full border p-2 rounded" value={billingDetails.paymentInfo[0].card[0].expiryMonth} onChange={(e)=>{
-                          const updatedBilling = {...billingDetails};
-                          updatedBilling.paymentInfo[0].card[0].expiryMonth = e.target.value;
-                          setBillingDetails(updatedBilling);
-                        }}>
-                          <option>Jan (01)</option>
-                          <option>Feb (02)</option>
-                          <option>Mar (03)</option>
-                          <option>Apr (04)</option>
-                          <option>May (05)</option>
-                          <option>Jun (06)</option>
-                          <option>Jul (07)</option>
-                          <option>Aug (08)</option>
-                          <option>Sep (09)</option>
-                          <option>Oct (10)</option>
-                          <option>Nov (11)</option>
-                          <option>Dec (12)</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label>Expiry Year *</label>
-                        <select className="w-full border p-2 rounded" value={billingDetails.paymentInfo[0].card[0].expiryYear} onChange={(e)=>{
-                          const updatedBilling = {...billingDetails};
-                          updatedBilling.paymentInfo[0].card[0].expiryYear = e.target.value;
-                          setBillingDetails(updatedBilling);
-                        }}>
-                          <option>2024</option>
-                          <option>2025</option>
-                          <option>2026</option>
-                          <option>2027</option>
-                          <option>2028</option>
-                          <option>2029</option>
-                          <option>2030</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label>City *</label>
-                        <input
-                          className="w-full border p-2 rounded"
-                          defaultValue="Montreal"
-                        />
-                      </div>
-
-                      <div>
-                        <label>Province *</label>
-                        <select className="w-full border p-2 rounded">
-                          <option>Quebec</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label>Postal Code *</label>
-                        <input
-                          className="w-full border p-2 rounded"
-                          defaultValue="H2J3K4"
-                        />
+                          <div>
+                            <label>Postal Code *</label>
+                            <input
+                              className="w-full border p-2 rounded"
+                              defaultValue="H2J3K4"
+                              onChange={(e)=>{
+                                const updatedBilling = {...billingDetails};
+                                updatedBilling.addressGroup[0].postalCode = e.target.value;
+                                setBillingDetails(updatedBilling);
+                              }}
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     </>
@@ -1035,6 +1074,11 @@ const ReviewPage = () => {
                     <input
                       className="w-full border p-2 rounded"
                       defaultValue="1"
+                      onChange={(e) => {
+                        const updatedDetails = { ...customerDetails };
+                        updatedDetails.contactInfo[0].countryCode = e.target.value;
+                        setCustomerDetails(updatedDetails);
+                      }}
                     />
                   </div>
 
@@ -1043,13 +1087,20 @@ const ReviewPage = () => {
                     <input
                       className="w-full border p-2 rounded"
                       placeholder="(XXX)-XXX-XXXX"
+                      onChange={(e) => {
+                        const updatedDetails = { ...customerDetails };
+                        updatedDetails.contactInfo[0].number = e.target.value;
+                        setCustomerDetails(updatedDetails);
+                      }}
                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="flex items-center gap-2 mb-3">
-                    <input type="checkbox" />
+                    <input type="checkbox" 
+                    
+                    />
                     Disable Email Receipt to Passenger
                   </label>
 
@@ -1057,11 +1108,21 @@ const ReviewPage = () => {
                     <input
                       className="border p-2 rounded"
                       placeholder="Email Address"
+                      onChange={(e) => {
+                        const updatedDetails = { ...customerDetails };
+                        updatedDetails.emailAddress = e.target.value;
+                        setCustomerDetails(updatedDetails);
+                      }}
                     />
 
                     <input
                       className="border p-2 rounded"
                       placeholder="Travel Agency Email"
+                      onChange={(e) => {
+                        const updatedDetails = { ...customerDetails };
+                        updatedDetails.travelAgencyEmail = e.target.value;
+                        setCustomerDetails(updatedDetails);
+                      }}
                     />
                   </div>
                 </div>
