@@ -658,6 +658,7 @@ const ReviewPage = () => {
                         className="w-full border p-2 rounded"
                         placeholder="First Name"
                         value={passengerDetails[0].firstName}
+                        maxLength={50}
                         onChange={(e) => {
                           const updatedDetails = [...passengerDetails];
                           updatedDetails[0].firstName = e.target.value;
@@ -671,6 +672,7 @@ const ReviewPage = () => {
                       <input
                         className="w-full border p-2 rounded"
                         placeholder="Middle Name"
+                        maxLength={50}
                         value={passengerDetails[0].middleName}
                         onChange={(e) => {
                           const updatedDetails = [...passengerDetails];
@@ -685,6 +687,7 @@ const ReviewPage = () => {
                       <input
                         className="w-full border p-2 rounded"
                         placeholder="Last Name"
+                        maxLength={50}
                         value={passengerDetails[0].lastName}
                         onChange={(e) => {
                           const updatedDetails = [...passengerDetails];
@@ -773,6 +776,7 @@ const ReviewPage = () => {
                       <input
                         className="w-full border p-2 rounded"
                         placeholder="Aeroplan Number"
+                        maxLength={15}
                         value={passengerDetails[0].membershipId?.[0] || ""}
                         onChange={(e) => {
                           const updatedDetails = [...passengerDetails];
@@ -787,6 +791,7 @@ const ReviewPage = () => {
                       <select 
                         className="w-full border p-2 rounded"
                         value={passengerDetails[0].documentType}
+                        maxLength={50}
                         onChange={(e) => {
                           const updatedDetails = [...passengerDetails];
                           updatedDetails[0].documentType = e.target.value;
@@ -904,6 +909,7 @@ const ReviewPage = () => {
                               <label>Card Holder Name *</label>
                               <input
                                 className="w-full border p-2 rounded"
+                                maxLength={30}
                                 value={billingDetails.paymentInfo[0].card[0].cardHolderName}
                                 onChange={(e) => {
                                   const updatedBilling = { ...billingDetails };
@@ -918,6 +924,7 @@ const ReviewPage = () => {
                               <input
                                 className="w-full border p-2 rounded"
                                 value={billingDetails.paymentInfo[0].card[0].number}
+                                maxLength={16}
                                 onChange={(e)=>{
                                   const updatedBilling = {...billingDetails};
                                   updatedBilling.paymentInfo[0].card[0].number = e.target.value;
@@ -931,6 +938,7 @@ const ReviewPage = () => {
                               <input
                                 className="w-full border p-2 rounded"
                                 value={billingDetails.paymentInfo[0].card[0].securityId}
+                                maxLength={3}
                                 onChange={(e)=>{
                                   const updatedBilling = {...billingDetails};
                                   updatedBilling.paymentInfo[0].card[0].securityId = e.target.value;
@@ -987,6 +995,7 @@ const ReviewPage = () => {
                             <input
                               className="w-full border p-2 rounded"
                               defaultValue="111"
+                              maxLength={100}
                               onChange={(e)=>{
                                 const updatedBilling = {...billingDetails};
                                 updatedBilling.addressGroup[0].streetName = e.target.value;
@@ -1014,6 +1023,7 @@ const ReviewPage = () => {
                             <input
                               className="w-full border p-2 rounded"
                               defaultValue="Montreal"
+                              maxLength={50}
                               onChange={(e)=>{
                                 const updatedBilling = {...billingDetails};
                                 updatedBilling.addressGroup[0].city = e.target.value;
@@ -1043,6 +1053,7 @@ const ReviewPage = () => {
                             <input
                               className="w-full border p-2 rounded"
                               defaultValue="H2J3K4"
+                              maxLength={7}
                               onChange={(e)=>{
                                 const updatedBilling = {...billingDetails};
                                 updatedBilling.addressGroup[0].postalCode = e.target.value;
@@ -1074,6 +1085,7 @@ const ReviewPage = () => {
                     <input
                       className="w-full border p-2 rounded"
                       defaultValue="1"
+                      maxLength={3}
                       onChange={(e) => {
                         const updatedDetails = { ...customerDetails };
                         updatedDetails.contactInfo[0].countryCode = e.target.value;
@@ -1087,6 +1099,8 @@ const ReviewPage = () => {
                     <input
                       className="w-full border p-2 rounded"
                       placeholder="(XXX)-XXX-XXXX"
+                      maxLength={10}
+                      value={customerDetails.contactInfo[0].number}
                       onChange={(e) => {
                         const updatedDetails = { ...customerDetails };
                         updatedDetails.contactInfo[0].number = e.target.value;
@@ -1108,6 +1122,7 @@ const ReviewPage = () => {
                     <input
                       className="border p-2 rounded"
                       placeholder="Email Address"
+                      maxLength={50}
                       onChange={(e) => {
                         const updatedDetails = { ...customerDetails };
                         updatedDetails.emailAddress = e.target.value;
@@ -1118,6 +1133,7 @@ const ReviewPage = () => {
                     <input
                       className="border p-2 rounded"
                       placeholder="Travel Agency Email"
+                      maxLength={50}
                       onChange={(e) => {
                         const updatedDetails = { ...customerDetails };
                         updatedDetails.travelAgencyEmail = e.target.value;
