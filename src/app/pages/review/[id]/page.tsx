@@ -39,10 +39,17 @@ type OriginDestinationInfo = {
 type Itinerary = {
   originDestinationInfo?: OriginDestinationInfo[];
 };
+type Status = {
+  type?: string;
+  gdsType?: string;
+  airlineSource?: string;
+}
 
 type Review = {
   id: string;
   itinerary?: Itinerary[];
+  status?: Status;
+  bookKey?: string;
 };
 
 type GetReviewResponse = {
@@ -99,7 +106,7 @@ type BillingDetails = {
 }
 
 type CustomerDetails = {
-  emailAddress: string;
+  emailAddress: string[];
   travelAgencyEmail: string;
   contactInfo: {
     type: string;
@@ -318,7 +325,7 @@ const ReviewPage = () => {
 		]
   })
   const [customerDetails,setCustomerDetails] = useState<CustomerDetails>({
-    emailAddress: "",
+    emailAddress: [""],
     travelAgencyEmail: "",
 		contactInfo: [
 			{
@@ -452,6 +459,89 @@ const ReviewPage = () => {
     lastOriginDestination?.flightSegmentInfo?.[
       (lastOriginDestination?.flightSegmentInfo?.length ?? 1) - 1
     ];
+    const handleConfirmBooking =  () => {
+      try {
+        let requestBody = {
+          "clientId": "FlightDepot",
+          "apiSource": review?.status?.gdsType ?? "NDC",
+          "corporateName": "",
+          "corporateDetails": {
+            "country": "",
+            "province": "",
+            "city": "",
+            "llfValue": "",
+            "policiesViolated": [],
+            "userComment": "",
+            "managerName": [],
+            "managerAction": "",
+            "managerComment": "",
+            "managerApproveTime": ""
+          },
+          "ssoInfo": {
+            "travellerProfileId": "",
+            "travellerCompanyId": "",
+            "lineNo": "",
+            "paymentFrom": "",
+            "travellerType": "",
+            "email": "",
+            "name": "",
+            "code": "",
+            "bookedByName": "",
+            "bookedByEmail": "",
+            "agentNameExternal": "",
+            "programId": ""
+          },
+          "queue": [],
+          bookKey: review?.bookKey,
+          "userRemarks": "",
+          "policyViolationReason": "",
+          "barBooking": false,
+          "userType": "guestBooking",
+          "barParInfo": {
+            "barId": "",
+            "parId": "",
+            "email": ""
+          },
+          "fileFields": {
+            "basic": [],
+            "air": []
+          },
+          "isManagerApprovalRequired": false,
+          "paymentFromProfile": false,
+          "agencyFee": 0,
+          "calculationType": "",
+          "agentProfile": "",
+          "clientProfileId": "",
+          "agentNotes": [],
+          passengerDetails:passengerDetails,
+          billingDetails:billingDetails,
+          customerDetails:customerDetails,
+          bookFlow: "CORP",
+          editBeforeSending: false,
+          secureVersion: false
+        }
+        console.log('Confirm Booking Request Body:', requestBody);
+        // const response = await fetch("https://stgapi.a.farenexushub.com/sandbox-session/v2/confirmBooking", {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //     Authorization: `Bearer ${token}`,
+        //   },
+        //   body: JSON.stringify({
+        //     // Include any required booking details here
+        //   }),
+        // });
+
+        // if (!response.ok) {
+        //   throw new Error(`Booking confirmation failed: ${response.status}`);
+        // }
+
+        // const result = await response.json();
+        // console.log('Booking confirmed:', result);
+      } catch (error) {
+        console.error('Error confirming booking:', error);
+      }
+    };
 
   return (
     <div className="w-full min-h-screen">
@@ -791,7 +881,6 @@ const ReviewPage = () => {
                       <select 
                         className="w-full border p-2 rounded"
                         value={passengerDetails[0].documentType}
-                        maxLength={50}
                         onChange={(e) => {
                           const updatedDetails = [...passengerDetails];
                           updatedDetails[0].documentType = e.target.value;
@@ -814,6 +903,7 @@ const ReviewPage = () => {
                       <input
                         className="w-full border p-2 rounded"
                         placeholder="Enter Document Number"
+                        maxLength={20}
                         value={passengerDetails[0].documentNumber}
                         onChange={(e) => {
                           const updatedDetails = [...passengerDetails];
@@ -1125,7 +1215,7 @@ const ReviewPage = () => {
                       maxLength={50}
                       onChange={(e) => {
                         const updatedDetails = { ...customerDetails };
-                        updatedDetails.emailAddress = e.target.value;
+                        updatedDetails.emailAddress = [e.target.value];
                         setCustomerDetails(updatedDetails);
                       }}
                     />
@@ -1162,7 +1252,7 @@ const ReviewPage = () => {
                 Edit Before Send
               </label>
 
-              <button className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700">
+              <button className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700" onClick={handleConfirmBooking}>
                 Confirm Booking
               </button>
             </div>
