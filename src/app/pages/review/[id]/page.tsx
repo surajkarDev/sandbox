@@ -459,7 +459,7 @@ const ReviewPage = () => {
     lastOriginDestination?.flightSegmentInfo?.[
       (lastOriginDestination?.flightSegmentInfo?.length ?? 1) - 1
     ];
-    const handleConfirmBooking =  () => {
+    const handleConfirmBooking =  async () => {
       try {
         let requestBody = {
           "clientId": "FlightDepot",
@@ -520,29 +520,52 @@ const ReviewPage = () => {
           editBeforeSending: false,
           secureVersion: false
         }
+        let req = {
+          orderId:'',
+          request:JSON.stringify(requestBody),
+          reviewId:reviewId
+        }
         console.log('Confirm Booking Request Body:', requestBody);
-        // const response = await fetch("https://stgapi.a.farenexushub.com/sandbox-session/v2/confirmBooking", {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //     Authorization: `Bearer ${token}`,
-        //   },
-        //   body: JSON.stringify({
-        //     // Include any required booking details here
-        //   }),
-        // });
+        const response = await fetch("https://stgapi.a.farenexushub.com/sandbox-session/v2/createBooking", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(req),
+        });
 
-        // if (!response.ok) {
-        //   throw new Error(`Booking confirmation failed: ${response.status}`);
-        // }
+        if (!response.ok) {
+          throw new Error(`Booking confirmation failed: ${response.status}`);
+        }
 
-        // const result = await response.json();
-        // console.log('Booking confirmed:', result);
+        const result = await response.json();
+        console.log('Booking confirmed:', result);
+        if(result && result.id){
+          getBookingRq(result.id);
+        }
       } catch (error) {
         console.error('Error confirming booking:', error);
       }
     };
-
+    const getBookingRq = async (id: string) => {
+      try{
+        const response = await fetch(`https://stgapi.a.farenexushub.com/sandbox-session/v2/getBookingRq/${id}`,{
+          method:'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        if(!response.ok){
+          throw new Error(`getBookingRq failed: ${response.status}`);
+        }
+        const result = await response.json();
+        console.log('getBookingRq result:', result);
+      }catch(error){
+        console.error('Error in getBookingRq:', error);
+      }
+    }
   return (
     <div className="w-full min-h-screen">
       <h1 className="text-2xl font-bold px-4 py-4">
