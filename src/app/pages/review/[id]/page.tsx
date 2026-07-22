@@ -542,15 +542,15 @@ const ReviewPage = () => {
         const result = await response.json();
         console.log('Booking confirmed:', result);
         if(result && result.id){
-          getBookingRq(result.id);
+          getBookingRq(result);
         }
       } catch (error) {
         console.error('Error confirming booking:', error);
       }
     };
-    const getBookingRq = async (id: string) => {
+    const getBookingRq = async (data: any) => {
       try{
-        const response = await fetch(`https://stgapi.a.farenexushub.com/sandbox-session/v2/getBookingRq/${id}`,{
+        const response = await fetch(`https://stgapi.a.farenexushub.com/sandbox-session/v2/getBookingRq/${data.id}`,{
           method:'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -562,8 +562,31 @@ const ReviewPage = () => {
         }
         const result = await response.json();
         console.log('getBookingRq result:', result);
+        booking(result);
       }catch(error){
         console.error('Error in getBookingRq:', error);
+      }
+    }
+
+    const booking = async (result: any) => {
+      try {
+        let req= JSON.parse(result.request);
+        const response = await fetch('https://stgapi.a.farenexushub.com/sandbox-session/v2/book',{
+          method:'POST',
+          headers:{
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(req)
+        })
+
+        if(!response.ok){
+          throw new Error(`Booking failed: ${response.status}`);
+        }
+        const res = await response.json();
+        console.log('Booking result:', res);
+      }catch(error){
+        console.error('Error in booking:', error);
       }
     }
   return (
