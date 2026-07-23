@@ -461,6 +461,55 @@ const ReviewPage = () => {
     ];
     const handleConfirmBooking =  async () => {
       try {
+        passengerDetails.forEach((passenger, index) => {
+          review?.itinerary?.[0]?.priceInfo?.paxFareBreakdown?.fareBreakdown.forEach((originDestination, odIndex) => {
+            if(originDestination.paxType === passenger.paxType){
+              passenger.paxWiseFareInfo = {
+                "basePrice": originDestination.paxFareInfo.basePrice,
+                "totalTax": originDestination.paxFareInfo.totalTax,
+                "totalPrice": originDestination.paxFareInfo.totalPrice,
+                "serviceFee": 0,
+                "ticketingFee": 0,
+                "maxAuthByAirline": 0,
+                "paymentModeSelected": "",
+                "totalAllowByCarrier": 0,
+                "totalAllowByMerchant": 0,
+                "refundToAgent": 0,
+                "gstCalulateValue": 0,
+                "publishedFare": String(originDestination.paxFareInfo.basePrice),
+                "netFare": "0.00",
+                "plusUpAmount": 0,
+                "equivFare": 0,
+                "tourCode": "",
+                "tourCodeFee": 0,
+                "merchantFee": 0,
+                "gstVal": 0,
+                "maxAllowByCarrier": 0,
+                "agencyFee": "0",
+                "markup": "0",
+                "miscAmount": 0
+              }
+            }
+          })
+          passenger.inBoundFareInfo = {
+            "maxAuthByAirline": 0,
+            "totalAllowByCarrier": 0,
+            "publishedFare": "0.00",
+            "netFare": "0.00",
+            "totalTax": 0,
+            "gstVal": 0,
+            "maxAllowByCarrier": 0
+          }
+          passenger.outBoundFareInfo = {
+            "maxAuthByAirline": 0,
+            "totalAllowByCarrier": 0,
+            "publishedFare": "0.00",
+            "netFare": "0.00",
+            "totalTax": 0,
+            "gstVal": 0,
+            "maxAllowByCarrier": 0
+          }
+        })
         let requestBody = {
           "clientId": "FlightDepot",
           "apiSource": review?.status?.gdsType ?? "NDC",
@@ -1090,18 +1139,18 @@ const ReviewPage = () => {
                                 updatedBilling.paymentInfo[0].card[0].expiryMonth = e.target.value;
                                 setBillingDetails(updatedBilling);
                               }}>
-                                <option>Jan (01)</option>
-                                <option>Feb (02)</option>
-                                <option>Mar (03)</option>
-                                <option>Apr (04)</option>
-                                <option>May (05)</option>
-                                <option>Jun (06)</option>
-                                <option>Jul (07)</option>
-                                <option>Aug (08)</option>
-                                <option>Sep (09)</option>
-                                <option>Oct (10)</option>
-                                <option>Nov (11)</option>
-                                <option>Dec (12)</option>
+                                <option value="01">Jan (01)</option>
+                                <option value="02">Feb (02)</option>
+                                <option value="03">Mar (03)</option>
+                                <option value="04">Apr (04)</option>
+                                <option value="05">May (05)</option>
+                                <option value="06">Jun (06)</option>
+                                <option value="07">Jul (07)</option>
+                                <option value="08">Aug (08)</option>
+                                <option value="09">Sep (09)</option>
+                                <option value="10">Oct (10)</option>
+                                <option value="11">Nov (11)</option>
+                                <option value="12">Dec (12)</option>
                               </select>
                             </div>
 
