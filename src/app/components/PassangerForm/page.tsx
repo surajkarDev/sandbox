@@ -43,7 +43,7 @@ const passengerTypes: Passenger[] = [
 ];
 
 export default function PassengerPopup() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const [count, setCount] = useState({
     adult: 1,
