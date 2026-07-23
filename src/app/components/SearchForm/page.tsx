@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
+import PassangerForm from '../PassangerForm/page';
 
 type SearchSegment = {
   windowDate: number;
@@ -360,7 +361,7 @@ const SearchForm = () => {
           }
           
         </div>
-        <form onSubmit={handleSearch}>
+        <form>
             {
                 searchData.map((location,index)=> {
                     return (
@@ -410,11 +411,14 @@ const SearchForm = () => {
                     )
                 })
             }
-          
+          <div className="advanceData">
+            <PassangerForm />
+          </div>
           {/* Button */}
           <div className="md:col-span-2 text-right flex justify-end">
             <button
-              type="submit"
+              type="button"
+              onClick={()=>handleSearch}
               className="px-4 flex items-center gap-1 selectedTab text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition duration-300"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
