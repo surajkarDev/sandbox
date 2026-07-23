@@ -615,13 +615,13 @@ const ReviewPage = () => {
         }
         const result = await response.json();
         console.log('getBookingRq result:', result);
-        booking(result);
+        booking(result,data.id);
       }catch(error){
         console.error('Error in getBookingRq:', error);
       }
     }
 
-    const booking = async (result: any) => {
+    const booking = async (result: any,id:string) => {
       try {
         let req= JSON.parse(result.request);
         const response = await fetch('https://stgapi.a.farenexushub.com/sandbox-session/v2/book',{
@@ -638,16 +638,16 @@ const ReviewPage = () => {
         }
         const res = await response.json();
         console.log('Booking result:', res);
-        updateBookingRq(res?.pnrDetails?.pnrIdentification?.[0]?.recordLocator,req)
+        updateBookingRq(res?.pnrDetails?.pnrIdentification?.[0]?.recordLocator,req,id)
       }catch(error){
         console.error('Error in booking:', error);
       }
     }
 
-    const updateBookingRq = async (pnr:string,prereq:any) => {
+    const updateBookingRq = async (pnr:string,prereq:any,id:string) => {
       try{
         const req = {
-          id:reviewId,
+          id:id,
           pnr:pnr,
           request:JSON.stringify(prereq)
         }
