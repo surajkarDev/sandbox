@@ -11,7 +11,7 @@ interface DatePickerSelectProps {
 const DatePickerSelect: React.FC<DatePickerSelectProps> = ({
   label = 'Date Of Birth',
   onDateChange,
-  initialDate = { day: '01', month: 'Jan', year: '1997' },
+  initialDate = { day: '01', month: '01', year: '1997' },
 }) => {
   const [day, setDay] = useState(initialDate.day);
   const [month, setMonth] = useState(initialDate.month);
@@ -77,8 +77,8 @@ const DatePickerSelect: React.FC<DatePickerSelectProps> = ({
           className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         >
           <option value="">Month</option>
-          {months.map((m) => (
-            <option key={m} value={m}>
+          {months.map((m,index) => (
+            <option key={m} value={index >= 9 ? index+1 : `0${index+1}`}>
               {m}
             </option>
           ))}

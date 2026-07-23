@@ -510,6 +510,9 @@ const ReviewPage = () => {
             "maxAllowByCarrier": 0
           }
         })
+        const customerdetail = { ...customerDetails };
+        delete customerdetail.travelAgencyEmail;
+        customerdetail.contactInfo[1].type = "MOBILE";
         let requestBody = {
           "clientId": "FlightDepot",
           "apiSource": review?.status?.gdsType ?? "NDC",
@@ -564,8 +567,9 @@ const ReviewPage = () => {
           "agentNotes": [],
           passengerDetails:passengerDetails,
           billingDetails:billingDetails,
-          customerDetails:customerDetails,
+          customerDetails:customerdetail,
           bookFlow: "CORP",
+          agencyEmailAddress:"",
           editBeforeSending: false,
           secureVersion: false
         }
@@ -634,8 +638,34 @@ const ReviewPage = () => {
         }
         const res = await response.json();
         console.log('Booking result:', res);
+        updateBookingRq(res?.pnrDetails?.pnrIdentification?.[0]?.recordLocator,req)
       }catch(error){
         console.error('Error in booking:', error);
+      }
+    }
+
+    const updateBookingRq = async (pnr:string,prereq:any) => {
+      try{
+        const req = {
+          id:reviewId,
+          pnr:pnr,
+          request:JSON.stringify(prereq)
+        }
+        const response = await fetch('https://stgapi.a.farenexushub.com/sandbox-session/v2/updateBookingRq',{
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body:JSON.stringify(req)
+        })
+        if(!response.ok){
+          throw new Error("update Booking Faild");
+        }
+        const res = await response.json();
+        console.log("res",res);
+      }catch(error){
+        console.error("update booking Error",error)
       }
     }
   return (
@@ -1183,6 +1213,19 @@ const ReviewPage = () => {
                               maxLength={100}
                               onChange={(e)=>{
                                 const updatedBilling = {...billingDetails};
+                                updatedBilling.addressGroup[0].houseNo = e.target.value;
+                                setBillingDetails(updatedBilling);
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <label>Address Line 2 *</label>
+                            <input
+                              className="w-full border p-2 rounded"
+                              defaultValue="111"
+                              maxLength={100}
+                              onChange={(e)=>{
+                                const updatedBilling = {...billingDetails};
                                 updatedBilling.addressGroup[0].streetName = e.target.value;
                                 setBillingDetails(updatedBilling);
                               }}
@@ -1198,8 +1241,8 @@ const ReviewPage = () => {
                               setBillingDetails(updatedBilling);
                             }}
                             >
-                              <option>Canada</option>
-                              <option>United States</option>
+                              <option value="CA">Canada</option>
+                              <option value="US">United States</option>
                             </select>
                           </div>
 
@@ -1226,10 +1269,10 @@ const ReviewPage = () => {
                                 setBillingDetails(updatedBilling);
                               }}
                             >
-                              <option>Quebec</option>
-                              <option>Ontario</option>
-                              <option>British Columbia</option>
-                              <option>Alberta</option>
+                              <option value="QC">Quebec</option>
+                              <option value="ON">Ontario</option>
+                              <option value="BC">British Columbia</option>
+                              <option value="AL">Alberta</option>
                             </select>
                           </div>
 
