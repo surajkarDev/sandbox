@@ -271,30 +271,7 @@ const ReviewPage = () => {
   const [paymentType, setPaymentType] = useState("credit-card");
   const [aeroplanPrograms, setAeroplanPrograms] = useState(AEROPLAN_PROGRAMS_OTHER);
   const [selectedAeroplan, setSelectedAeroplan] = useState("");
-  const [passengerDetails,setPassengerDetails] = useState<PassengerDetails[]>([
-    {
-    paxType:'ADT',
-    title:'',
-    firstName:'',
-    middleName:'',
-    lastName:'',
-    gender:'',
-    dateOfBirth:'',
-    programId:[""],
-    membershipId:[""],
-    specialAssistance:"",
-    mealPref:"",
-    servicesInfo:[],
-    paxWiseFareInfo:[],
-    billingDetails:{},
-    customerDetails:{},
-    inBoundFareInfo:{},
-    outBoundFareInfo:{},
-    referenceId:"",
-    documentType:"",
-    documentNumber:"",
-  }
-  ]);
+  const [passengerDetails,setPassengerDetails] = useState<PassengerDetails[]>([]);
   const [billingDetails,setBillingDetails] = useState<BillingDetails>({
     paymentInfo: [
 			{
@@ -420,7 +397,38 @@ const ReviewPage = () => {
           typeof reviewResult.response === 'string'
             ? (JSON.parse(reviewResult.response) as Review)
             : reviewResult.response;
+        let passengerDetail = reviewData?.passenger?.filter(
+          x => x.loyaltyProgramAccount
+        );
 
+        passengerDetail = passengerDetail.map(x => {
+          delete x.loyaltyProgramAccount;
+          return x;
+        });
+        passengerDetail = passengerDetail.map((x) => ({
+          ...x,
+          title: "",
+          firstName: "",
+          middleName: "",
+          lastName: "",
+          gender: "",
+          dateOfBirth: "",
+          programId: [],
+          membershipId: [],
+          specialAssistance: "",
+          mealPref: "",
+          servicesInfo: [],
+          paxWiseFareInfo: [],
+          billingDetails: {},
+          customerDetails: {},
+          inBoundFareInfo: {},
+          outBoundFareInfo: {},
+          referenceId: "",
+          documentType: "",
+          documentNumber: "",
+        }));
+        console.log("passangerDetail",passengerDetail)
+        setPassengerDetails(passengerDetail);
         setReview(reviewData);
 
         // Determine which Aeroplan programs list to use based on review data
@@ -843,9 +851,14 @@ const ReviewPage = () => {
             </div>
 
             {/* Passenger Section */}
-            <div className="border bg-white rounded">
+            {/* {
+              JSON.stringify(passengerDetails)
+            } */}
+            {
+              passengerDetails.map((passanger,index)=>(
+                <div className="border bg-white rounded mb-4" key={index}>
               <div className="inline-block bg-gray-200 px-3 py-1 border-r border-b text-sm font-medium">
-                Passenger, 1 (Adult | Priced Adult)
+                Passenger, {index+1} ({passanger.passengerType} | Priced {passanger.passengerType})
               </div>
               <div className="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
 
@@ -854,9 +867,9 @@ const ReviewPage = () => {
                   <div className="grid grid-cols-4 gap-3">
                     <div>
                       <label className="text-sm">Title *</label>
-                      <select className="w-full border p-2 rounded" value={passengerDetails[0].title} onChange={(e) => {
+                      <select className="w-full border p-2 rounded" value={passanger.title} onChange={(e) => {
                         const updatedDetails = [...passengerDetails];
-                        updatedDetails[0].title = e.target.value;
+                        updatedDetails[index].title = e.target.value;
                         setPassengerDetails(updatedDetails);
                       }}>
                         <option value="">Select</option>
@@ -872,11 +885,11 @@ const ReviewPage = () => {
                       <input
                         className="w-full border p-2 rounded"
                         placeholder="First Name"
-                        value={passengerDetails[0].firstName}
+                        value={passanger.firstName}
                         maxLength={50}
                         onChange={(e) => {
                           const updatedDetails = [...passengerDetails];
-                          updatedDetails[0].firstName = e.target.value;
+                          updatedDetails[index].firstName = e.target.value;
                           setPassengerDetails(updatedDetails);
                         }}
                       />
@@ -888,10 +901,10 @@ const ReviewPage = () => {
                         className="w-full border p-2 rounded"
                         placeholder="Middle Name"
                         maxLength={50}
-                        value={passengerDetails[0].middleName}
+                        value={passanger.middleName}
                         onChange={(e) => {
                           const updatedDetails = [...passengerDetails];
-                          updatedDetails[0].middleName = e.target.value;
+                          updatedDetails[index].middleName = e.target.value;
                           setPassengerDetails(updatedDetails);
                         }}
                       />
@@ -903,10 +916,10 @@ const ReviewPage = () => {
                         className="w-full border p-2 rounded"
                         placeholder="Last Name"
                         maxLength={50}
-                        value={passengerDetails[0].lastName}
+                        value={passanger.lastName}
                         onChange={(e) => {
                           const updatedDetails = [...passengerDetails];
-                          updatedDetails[0].lastName = e.target.value;
+                          updatedDetails[index].lastName = e.target.value;
                           setPassengerDetails(updatedDetails);
                         }}
                       />
@@ -917,10 +930,10 @@ const ReviewPage = () => {
                     <div>
                       <label className="text-sm">Gender *</label>
                       <select className="w-full border p-2 rounded"
-                        value={passengerDetails[0].gender}
+                        value={passanger.gender}
                         onChange={(e) => {
                           const updatedDetails = [...passengerDetails];
-                          updatedDetails[0].gender = e.target.value;
+                          updatedDetails[index].gender = e.target.value;
                           setPassengerDetails(updatedDetails);
                         }}
                       >
@@ -953,7 +966,7 @@ const ReviewPage = () => {
                         onDateChange={(date) => {
                           console.log('Selected date:', date);
                           const updatedDetails = [...passengerDetails];
-                          updatedDetails[0].dateOfBirth = date.year+'-'+ date.month+'-'+date.day;
+                          updatedDetails[index].dateOfBirth = date.year+'-'+ date.month+'-'+date.day;
                           setPassengerDetails(updatedDetails);
                           // Update your state here
                         }}
@@ -973,7 +986,7 @@ const ReviewPage = () => {
                         onChange={(e) => {
                           setSelectedAeroplan(e.target.value);
                           const updatedDetails = [...passengerDetails];
-                          updatedDetails[0].programId = [e.target.value];
+                          updatedDetails[index].programId = [e.target.value];
                           setPassengerDetails(updatedDetails);
                         }}
                       >
@@ -992,10 +1005,10 @@ const ReviewPage = () => {
                         className="w-full border p-2 rounded"
                         placeholder="Aeroplan Number"
                         maxLength={15}
-                        value={passengerDetails[0].membershipId?.[0] || ""}
+                        value={passanger.membershipId?.[0] || ""}
                         onChange={(e) => {
                           const updatedDetails = [...passengerDetails];
-                          updatedDetails[0].membershipId = [e.target.value];
+                          updatedDetails[index].membershipId = [e.target.value];
                           setPassengerDetails(updatedDetails);
                         }}
                       />
@@ -1005,10 +1018,10 @@ const ReviewPage = () => {
                       <label className="text-sm">Document Type</label>
                       <select 
                         className="w-full border p-2 rounded"
-                        value={passengerDetails[0].documentType}
+                        value={passanger.documentType}
                         onChange={(e) => {
                           const updatedDetails = [...passengerDetails];
-                          updatedDetails[0].documentType = e.target.value;
+                          updatedDetails[index].documentType = e.target.value;
                           setPassengerDetails(updatedDetails);
                         }}
                       >
@@ -1029,10 +1042,10 @@ const ReviewPage = () => {
                         className="w-full border p-2 rounded"
                         placeholder="Enter Document Number"
                         maxLength={20}
-                        value={passengerDetails[0].documentNumber}
+                        value={passanger.documentNumber}
                         onChange={(e) => {
                           const updatedDetails = [...passengerDetails];
-                          updatedDetails[0].documentNumber = e.target.value;
+                          updatedDetails[index].documentNumber = e.target.value;
                           setPassengerDetails(updatedDetails);
                         }}
                       />
@@ -1051,6 +1064,9 @@ const ReviewPage = () => {
                 </div>
               </div>
             </div>
+              ))
+            }
+            
 
             {/* Payment Information */}
             <div className="border bg-white rounded mt-5">
