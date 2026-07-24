@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Minus, Plus, Users, X } from "lucide-react";
 
 type PassengerType =
@@ -42,16 +42,56 @@ const passengerTypes: Passenger[] = [
   },
 ];
 
-export default function PassengerPopup() {
-  const [open, setOpen] = useState(false);
+interface PassengerPopupProps {
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
+  onConfirm?: (count: typeof defaultCount) => void;
+  initialCount?: Partial<typeof defaultCount>;
+  maxPassengers?: number;
+  setPassangerList?: (passengers: { type: string; quantity: number }[]) => void;
+}
+
+const defaultCount = {
+  adult: 1,
+  youth: 0,
+  child: 0,
+  infantLap: 0,
+  infantSeat: 0,
+};
+
+export default function PassengerPopup({
+  open: externalOpen = false,
+  setOpen: externalSetOpen,
+  onConfirm,
+  initialCount,
+  maxPassengers = 9,
+  setPassangerList,
+}: PassengerPopupProps = {}) {
+  const [open, setOpen] = useState(externalOpen);
+  const handleSetOpen = (value: boolean) => {
+    setOpen(value);
+    externalSetOpen?.(value);
+  };
 
   const [count, setCount] = useState({
-    adult: 1,
-    youth: 0,
-    child: 0,
-    infantLap: 0,
-    infantSeat: 0,
+    ...defaultCount,
+    ...initialCount,
   });
+
+  // Update parent's passenger list whenever count changes
+  useEffect(() => {
+    if (!setPassangerList) return;
+    
+    const passengers = [
+      { type: "ADT", quantity: count.adult },
+      { type: "YTH", quantity: count.youth },
+      { type: "CHD", quantity: count.child },
+      { type: "INF", quantity: count.infantLap },
+      { type: "INS", quantity: count.infantSeat },
+    ].filter((p) => p.quantity > 0);
+    
+    setPassangerList(passengers.length > 0 ? passengers : [{ type: "ADT", quantity: 1 }]);
+  }, [count, setPassangerList]);
 
   const totalPassengers = useMemo(() => {
     return (
@@ -76,9 +116,9 @@ export default function PassengerPopup() {
         prev.infantLap +
         prev.infantSeat;
 
-      // Max passengers = 9
-      if (total >= 9) {
-        alert("Maximum 9 passengers are allowed.");
+      // Max passengers limit
+      if (total >= maxPassengers) {
+        alert(`Maximum ${maxPassengers} passengers are allowed.`);
         return prev;
       }
 
@@ -138,10 +178,9 @@ export default function PassengerPopup() {
     <div className="flex items-start">
       <div className="relative">
         {/* Trigger */}
-
         <button
           type="button"
-          onClick={() => setOpen(!open)}
+          onClick={() => handleSetOpen(!open)}
           className="flex items-center gap-2 rounded border border-gray-300 bg-white px-4 py-2 shadow-sm"
         >
           <Users size={18} />
@@ -159,7 +198,7 @@ export default function PassengerPopup() {
                 Travelers
               </h2>
 
-              <button type="button" onClick={() => setOpen(false)}>
+              <button type="button" onClick={() => handleSetOpen(false)}>
                 <X
                   size={22}
                   className="text-slate-600 hover:text-black"
@@ -222,11 +261,32 @@ export default function PassengerPopup() {
             </div>
 
             {/* Footer */}
-
-            {/* <div className="border-t bg-gray-50 p-3 text-center text-sm text-gray-600">
-              <div>Total Passengers : {totalPassengers} / 9</div>
-              <div>Total Infants : {totalInfants}</div>
-            </div> */}
+            <div className="border-t bg-gray-50 p-3">
+              {(onConfirm || setPassangerList) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (setPassangerList) {
+                      // Convert count to passenger list format
+                      const passengers = [
+                        { type: "ADT", quantity: count.adult },
+                        { type: "YTH", quantity: count.youth },
+                        { type: "CHD", quantity: count.child },
+                        { type: "INF", quantity: count.infantLap },
+                        { type: "INS", quantity: count.infantSeat },
+                      ].filter((p) => p.quantity > 0);
+                      
+                      setPassangerList(passengers.length > 0 ? passengers : [{ type: "ADT", quantity: 1 }]);
+                    }
+                    onConfirm?.(count);
+                    handleSetOpen(false);
+                  }}
+                  className="w-full rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                >
+                  Confirm
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>

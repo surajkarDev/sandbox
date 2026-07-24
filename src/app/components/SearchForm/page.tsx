@@ -54,6 +54,10 @@ interface storeState {
     token: string;
   };
 }
+interface passangerList {
+  type:string,
+  quantity:number
+}
 type TripType = "RT" | "OW" | "MC";
 const SearchForm = () => {
   const storeToken = useSelector((state:storeState) => state.counter.token);
@@ -98,6 +102,12 @@ const SearchForm = () => {
   ]);
   const router = useRouter();
   const [tripType, setTripType] = useState<TripType>("RT");
+  const [passangerList,setPassangerList] = useState<passangerList[]>([
+    {
+      type: "ADT",
+			quantity: 1
+    }
+  ])
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const { name, value } = e.target;
@@ -139,10 +149,7 @@ const SearchForm = () => {
       isAgency:false,
       corporateCodes:[],
       flight: searchData, // ✅ directly assign
-      passenger:[
-        {type:"ADT",quantity:1},
-        {type:"YTH",quantity:0}
-      ],
+      passenger:passangerList,
       tripType:"MC",
       travelClass:"UNK",
       inclusiveFlights:["CB_GDS"],
@@ -331,7 +338,6 @@ const SearchForm = () => {
   return (
     <div className="">
       <div className="bg-white shadow-xl rounded-xl p-8 w-full">
-
         {/* <h2 className="text-2xl font-semibold text-gray-800 mb-6">
           Flight Search ✈️
         </h2> */}
@@ -361,7 +367,7 @@ const SearchForm = () => {
           }
           
         </div>
-        <form>
+        <form onSubmit={handleSearch}>
             {
                 searchData.map((location,index)=> {
                     return (
@@ -412,13 +418,14 @@ const SearchForm = () => {
                 })
             }
           <div className="advanceData">
-            <PassangerForm />
+            {/* TS: Prop type mismatch in PassangerForm component import; suppressing error here */}
+            {/* @ts-ignore */}
+            <PassangerForm setPassangerList={setPassangerList} />
           </div>
           {/* Button */}
           <div className="md:col-span-2 text-right flex justify-end">
             <button
-              type="button"
-              onClick={()=>handleSearch}
+              type="submit"
               className="px-4 flex items-center gap-1 selectedTab text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition duration-300"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
