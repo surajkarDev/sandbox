@@ -10,6 +10,7 @@ import "../../../../../public/css/LfsPage.css";
 ========================= */
 
 type FlightSegment = {
+  flightDuration(flightDuration: any): string;
   departure: { airportCode: string };
   arrival: { airportCode: string };
   operatingCarrier: { code: string, name: string };
@@ -73,6 +74,8 @@ const LfsPage = () => {
   const [editBeforeSend, setEditBeforeSend] = useState<boolean>(false);
   const [errorLfs, setErrorLfs] = useState<string | null>(null);
   const router = useRouter();
+  const [boundSelect,setBoundSelect] = useState<number>(1);
+  const [selectedBoundDetailShow,setSelectedBoundDetailsShow] = useState<boolean>(false);
 
   /* =========================
      ✅ GET TOKEN (CLIENT SAFE)
@@ -137,7 +140,6 @@ const LfsPage = () => {
       const data = await response.json();
 
       const result = data?.response?.[0] || null;
-      console.log("ExecuteSearch Result:", result);
       if(result.status.type === "ERROR"){
         setErrorLfs(result.error.errorMessage);
       }else{
@@ -159,8 +161,6 @@ const LfsPage = () => {
     }
 
   const fullRowCount = Math.floor(total / 5) * 5;
-    // console.log("fullRowCount:", fullRowCount, "index:", index);
-    console.log(Math.floor(total / 5))
     return index >= fullRowCount ? "lg:flex-1" : "lg:w-1/5";
   };
 
@@ -206,7 +206,6 @@ const LfsPage = () => {
         const existingIndex = prev.findIndex(
           item => item.boundIndex === sliceIndex
         );
-        console.log("existingIndex",existingIndex);
         
         // Replace existing selection for same bound
         if (existingIndex !== -1) {
@@ -243,9 +242,6 @@ const LfsPage = () => {
     selectedFare.forEach(fare => {
       reviewKeys += fare.reviewKey + ',';
     });
-    console.log("Booking with fares:", selectedFare);
-    console.log("Review Keys for booking:", reviewKeys);
-    console.log("searchResult?.status?.gdsType:", searchResult?.status?.gdsType);
     let req = {
       reviewKey : reviewKeys,
       apiSource : searchResult?.status?.gdsType || "Unknown",
@@ -268,7 +264,6 @@ const LfsPage = () => {
       })
        const data = await response.json();
 
-       console.log("Booking Response:", data);
         if(response.ok){
           // alert("Booking successful!");
           router.push(`/pages/review/${data?.id}`);
@@ -281,6 +276,27 @@ const LfsPage = () => {
     }
     // alert("Booking successful! (This is a mock action.)");
   }
+
+  const dateReturn = (dateString: string) => {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = { 
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    };
+    return date.toLocaleDateString(undefined, options);
+  }
+
+   const flightdurationFun = (duration:string) => {
+    const minutes = parseInt(duration, 10);
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    if (hours && remainingMinutes) return `${hours} hrs ${remainingMinutes} min`;
+    if (hours) return `${hours} hrs`;
+    return `${remainingMinutes} min`;
+   }
   /* =========================
      ✅ TRIGGER API
   ========================= */
@@ -332,11 +348,61 @@ const LfsPage = () => {
               </div>
             ))
           }
+          {
+            selectedBoundDetailShow && (
+              <>
+                <div className="selectedItenaryModal">
+                    <div className="flex items-center justify-center h-full">
+                      <div className="selectedItenaryModalinner bg-white p-4 shadow-lg w-10/12 relative pt-8">
+                          <h4 className="text-lg font-bold mb-2">Flight Details</h4>
+                          <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 bg-gray-200" onClick={() => setSelectedBoundDetailsShow(false)}>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                          {
+                            selectedFare.map((fare,index)=> (
+                              <React.Fragment key={index}>
+                              <div>
+                                  {
+                                    fare.originDestinationInfo.map((info,index1)=> (
+                                      <div key={index1} className="route py-6 px-1">
+                                          {
+                                            info.flightSegmentInfo.map((segment, segIndex) => (
+                                              <React.Fragment key={segIndex}>
+                                                <div v-if={segment} className="segment text-center">
+                                                  <p>
+                                                  {segment.departure.airportCode} To {segment.arrival.airportCode} ({dateReturn(String(segment.departureDateTime))})
+                                                  </p>
+                                                  {flightdurationFun(String(segment.flightDuration))}
+                                                </div>
+                                                <div className="border border-gray-300 my-2 p-4">
+                                                    <div className="selectedItenaryModalInnerContent">
+                                                      <p className="text-[15px] bg-[#eeeeee] py-[2px] px-[10px] border-b border-[#707070]">{segment.operatingCarrier.code} {segment.flightNumber} Aircraft Type {segment.equipment.code}</p>
+                                                    </div>
+                                                </div>
+                                              </React.Fragment>
+                                            ))
+                                          }
+                                      </div>
+                                    ))
+                                  }
+                              </div>
+                              </React.Fragment>
+                            ))
+                          }
+                      </div>
+                    </div>
+                </div>
+              </>
+            )
+          }
           <div className='mt-3 flex justify-between items-center'>
             <div className="">
               <button className='bg-gray-700 text-white px-3 py-1 rounded text-[13px] cursor-pointer' onClick={() => handleReset()}>Reset</button>
-              <button className='bg-gray-700 text-white px-3 py-1 rounded ml-2 text-[13px] cursor-pointer'>Details</button>
+              <button className='bg-gray-700 text-white px-3 py-1 rounded ml-2 text-[13px] cursor-pointer' onClick={() => setSelectedBoundDetailsShow(true)}>Details</button>
             </div>
+
             <div className="mt-2">
               <span>
                 <input type="checkbox" id="terms" name="terms" checked={editBeforeSend} className='mr-2' onChange={(e)=> setEditBeforeSend(e.target.checked)} />
@@ -358,12 +424,29 @@ const LfsPage = () => {
 
       {/* ✅ DATA */}
       {!loading && !error && (
-        <div className="flight-results">
+        <div className={`${searchResult?.sowSliceItinerary?.length>2 ? 'flight-resultsMC':'flight-results'}`}>
           {/* {JSON.stringify(searchResult, null, 2)} */}
           {/* {searchResult.sowSliceItinerary[0].sliceItinerary[0].tripType} */}
+          {searchResult?.sowSliceItinerary?.length > 2 ? (
+            <>
+            <div className='flex gap-0.5 mb-2'>
+              {JSON.stringify(boundSelect)}
+              {
+                
+                searchResult?.sowSliceItinerary.map((boudbtn,index)=>(
+                  <div key={index}>
+                    <button className='btn' onClick={()=>setBoundSelect(index+1)}>Bound {index+1}</button>
+                  </div>
+                ))
+              }
+              </div>
+            </>
+          ) : (
+            <> </>
+          )}
           {searchResult?.sowSliceItinerary?.length ? (
             searchResult.sowSliceItinerary.map((slice, sliceIndex) => (
-              <div key={sliceIndex} className="slice-card w-full mx-4">
+              <div key={sliceIndex} className={`slice-card w-full ${searchResult?.sowSliceItinerary?.length>2? '' : 'mx-4'}`}>
 
                 {slice?.sliceItinerary?.map((itinerary, itineraryIndex) => (
                   <div key={itineraryIndex} className="itinerary border p-3 mb-3">
@@ -450,7 +533,7 @@ const LfsPage = () => {
                 ))}
 
               </div>
-          ):(
+          ):( 
             <p className="bg-[#e7e7e7] py-[10px] px-[13px] rounded-lg border border-[#ff1414] ml-4">{errorLfs}</p>
           )}
         </div>
