@@ -298,6 +298,17 @@ const LfsPage = () => {
     return `${remainingMinutes} min`;
    }
   /* =========================
+     ✅ DISABLE SCROLL WHEN MODAL OPEN
+  ========================= */
+  useEffect(() => {
+    if (selectedBoundDetailShow) {
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.documentElement.style.overflow = '';
+    }
+  }, [selectedBoundDetailShow]);
+
+  /* =========================
      ✅ TRIGGER API
   ========================= */
   useEffect(() => {
