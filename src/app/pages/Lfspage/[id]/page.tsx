@@ -76,6 +76,8 @@ const LfsPage = () => {
   const router = useRouter();
   const [boundSelect,setBoundSelect] = useState<number>(1);
   const [selectedBoundDetailShow,setSelectedBoundDetailsShow] = useState<boolean>(false);
+  const [pageLinkList,setPageLinkList] = useState<string[]>(["Services","Seat","Seat with FQTV","Upsell Offers"]);
+  const [pagelistShow,setPagelistShow] = useState<boolean>(false);
 
   /* =========================
      ✅ GET TOKEN (CLIENT SAFE)
@@ -464,7 +466,28 @@ const LfsPage = () => {
               <span className='ml-4 font-bold'>
                 {selectedFare[0].currencyCode} {getCurrencySymbol(selectedFare[0].currencyCode)}{selectedFare.reduce((total, fare) => total + parseFloat(fare.totalPrice), 0).toFixed(2)}
               </span>
-              <button className='bg-gray-700 text-white px-3 py-1 rounded ml-4 cursor-pointer' onClick={()=>book()}>Book</button>
+              <div className='flex justify-end relative'>
+                <button className='bg-gray-700 text-white px-3 py-1 ml-4 cursor-pointer rounded-tl-[5px] rounded-bl-[5px]' onClick={()=>book()}>Book</button>
+                <span className='inline-flex border items-center p-1 rounded-tr-[5px] rounded-br-[5px] px-2 cursor-pointer' onClick={()=>setPagelistShow(!pagelistShow)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" className="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                    <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                  </svg>
+                </span>
+                {
+                  pagelistShow && (
+                    <div className="bg-white absolute py-2 right-0 top-[33px] shadow-[1px_1px_10px_#b3b3b3] rounded-[10px]">
+                      <ul>
+                        {
+                          pageLinkList.map((link,index)=> (
+                            <li className="py-[7px] px-[30px] cursor-pointer hover:bg-[#e5e5e5]" key={index}>{link}</li>
+                          ))
+                        }
+                      </ul>
+                    </div>
+                  )
+                }
+              </div>
+
             </div>
           </div>
         </div>
