@@ -425,7 +425,7 @@ const LfsPage = () => {
                                                         <div className='text-right'>
                                                           {dateReturn(String(segment.arrivalDateTime))}&nbsp;&nbsp;
                                                           {timeflightdurationFun(String(segment.arrivalDateTime))}
-                                                          <p><small class="bg-[#e7e7e7] p-1 px-2 rounded">{fare.priceClass[0].fareClassType} {fare.priceClass[0].bookingClass[0]}</small></p>
+                                                          <p><small className="bg-[#e7e7e7] p-1 px-2 rounded">{fare.priceClass[0].fareClassType} {fare.priceClass[0].bookingClass[0]}</small></p>
                                                           <p><small><b>Fare Basis Code :</b> {fare.metaData.ptc[0].fareBasis[0]}</small></p>
                                                           <p><small><b>Fare Code :</b> {fare.metaData.ptc[0].fareCode[0]}</small></p>
                                                         </div>
