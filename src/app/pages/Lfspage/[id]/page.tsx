@@ -349,7 +349,7 @@ const LfsPage = () => {
                     Aircraft Type {fare.originDestinationInfo[0]?.flightSegmentInfo[0]?.equipment?.code}
                   </span>
                   <span>
-                    Trip Duration: {fare.originDestinationInfo[0]?.boundDuration}
+                    Trip Duration: {timeflightdurationFun(fare.originDestinationInfo[0]?.boundDuration)}
                   </span>
                   <p className="border border-dashed border-gray-300 px-2 text-[13px]">{fare?.priceClass[0]?.fareClassType}</p>
                 </div>
