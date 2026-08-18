@@ -24,6 +24,21 @@ export default function ReviewServicePage() {
   const [loading, setLoading] = useState(false);
   const [reviewKey, setReviewKey] = useState<string | null>(null);
   const [servicesResponse, setServicesResponse] = useState<any>({});
+  const [error, setError] = useState<string | null>(null);
+
+  const readJsonResponse = async (response: Response) => {
+    const text = await response.text();
+
+    if (!text) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(text);
+    } catch {
+      return { raw: text };
+    }
+  };
 
   const callServices = async () => {
     if (!isNonEmptyString(token) || !isNonEmptyString(reviewKey)) {
@@ -49,14 +64,22 @@ export default function ReviewServicePage() {
       );
 
       if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          setToken(null);
+          setError('Your session has expired. Please log in again.');
+          return;
+        }
+
         throw new Error(`Services call failed: ${response.status}`);
       }
 
-      const res = await response.json();
-      setServicesResponse(res);
+      const res = await readJsonResponse(response);
+      setServicesResponse(res ?? {});
       console.log('Services response:', res);
     } catch (error) {
       console.error('Error calling services:', error);
+      setError('Unable to load services for this review.');
     }
   };
 
@@ -88,12 +111,19 @@ export default function ReviewServicePage() {
         console.log('Response status:', response.status);
 
         if (!response.ok) {
+          if (response.status === 401) {
+            localStorage.removeItem('token');
+            setToken(null);
+            setError('Your session has expired. Please log in again.');
+            return;
+          }
+
           throw new Error(`Failed to fetch review: ${response.status}`);
         }
 
-        const reqData = (await response.json()) as { request?: string };
+        const reqData = (await readJsonResponse(response)) as { request?: string } | null;
 
-        if (!isNonEmptyString(reqData.request)) {
+        if (!reqData || !isNonEmptyString(reqData.request)) {
           throw new Error('Review request payload is missing or invalid.');
         }
 
@@ -107,6 +137,7 @@ export default function ReviewServicePage() {
         setReviewKey(parsedRequest.reviewKey);
       } catch (error) {
         console.error('Error fetching review:', error);
+        setError('Unable to load review details.');
       } finally {
         setLoading(false);
       }
@@ -125,6 +156,7 @@ export default function ReviewServicePage() {
 
   return (
     <div className="p-6">
+      {error && <p className="mb-3 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
       {loading && <p className="mt-3 text-sm text-gray-500">Loading review...</p>}
       {servicesResponse?.itineraryInfo?.originDestinationInfo ? (
         <>
@@ -143,7 +175,7 @@ export default function ReviewServicePage() {
           ))}
         </>
       ) : (
-        <p className="mt-3 text-sm text-gray-500">No services found.</p>
+        !error && <p className="mt-3 text-sm text-gray-500">No services found.</p>
       )}
     </div>
   );
