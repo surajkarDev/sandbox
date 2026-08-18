@@ -458,7 +458,7 @@ const LfsPage = () => {
               <button className='bg-gray-700 text-white px-3 py-1 rounded ml-2 text-[13px] cursor-pointer' onClick={() => setSelectedBoundDetailsShow(true)}>Details</button>
             </div>
 
-            <div className="mt-2">
+            <div className="mt-2 flex items-center">
               <span>
                 <input type="checkbox" id="terms" name="terms" checked={editBeforeSend} className='mr-2' onChange={(e)=> setEditBeforeSend(e.target.checked)} />
                 <label htmlFor="terms" className='text-sm text-[#868686]'>Edit Before Send</label>
