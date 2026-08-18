@@ -235,11 +235,17 @@ const LfsPage = () => {
     setSelectedFare([]);
   }
 
-  const book = async () => {
+  const book = async (bookType: string) => {
     if(selectedFare.length === 0){
       alert("Please select a fare before booking.");
       return;
     }
+
+    if (!id) {
+      alert("Missing search ID. Please try again.");
+      return;
+    }
+
     let reviewKeys = '';
     selectedFare.forEach(fare => {
       reviewKeys += fare.reviewKey + ',';
@@ -267,8 +273,18 @@ const LfsPage = () => {
        const data = await response.json();
 
         if(response.ok){
-          // alert("Booking successful!");
-          router.push(`/pages/review/${data?.id}`);
+          const reviewId = data?.id;
+
+          if (!reviewId) {
+            alert("Review ID was not returned from the server.");
+            return;
+          }
+
+          if(bookType === 'book'){
+            router.push(`/pages/review/${reviewId}`);
+          }else if(bookType === 'service'){
+            router.push(`/pages/review/${reviewId}/service`);
+          }
         }else{
           alert("Booking failed: " + (data?.message || "Unknown error"));
         }
@@ -459,7 +475,7 @@ const LfsPage = () => {
             </div>
 
             <div className="mt-2 flex items-center">
-              <span>
+              <span className='flex items-center'>
                 <input type="checkbox" id="terms" name="terms" checked={editBeforeSend} className='mr-2' onChange={(e)=> setEditBeforeSend(e.target.checked)} />
                 <label htmlFor="terms" className='text-sm text-[#868686]'>Edit Before Send</label>
               </span>
@@ -467,7 +483,7 @@ const LfsPage = () => {
                 {selectedFare[0].currencyCode} {getCurrencySymbol(selectedFare[0].currencyCode)}{selectedFare.reduce((total, fare) => total + parseFloat(fare.totalPrice), 0).toFixed(2)}
               </span>
               <div className='flex justify-end relative'>
-                <button className='bg-gray-700 text-white px-3 py-1 ml-4 cursor-pointer rounded-tl-[5px] rounded-bl-[5px]' onClick={()=>book()}>Pay</button>
+                <button className='bg-gray-700 text-white px-3 py-1 ml-4 cursor-pointer rounded-tl-[5px] rounded-bl-[5px]' onClick={()=>book('book')}>Pay</button>
                 <span className='inline-flex border items-center p-1 rounded-tr-[5px] rounded-br-[5px] px-2 cursor-pointer' onClick={()=>setPagelistShow(!pagelistShow)}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" className="bi bi-caret-down-fill" viewBox="0 0 16 16">
                     <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
@@ -479,7 +495,7 @@ const LfsPage = () => {
                       <ul>
                         {
                           pageLinkList.map((link,index)=> (
-                            <li className="whitespace-nowrap py-[7px] px-[30px] cursor-pointer hover:bg-[#e5e5e5]" key={index}>{link}</li>
+                            <li onClick={()=>book('service')} className="whitespace-nowrap py-[7px] px-[30px] cursor-pointer hover:bg-[#e5e5e5]" key={index}>{link}</li>
                           ))
                         }
                       </ul>
