@@ -297,6 +297,17 @@ const LfsPage = () => {
     if (hours) return `${hours} hrs`;
     return `${remainingMinutes} min`;
    }
+
+   const timeflightdurationFun = (dateString:string) => {
+    const date = new Date(dateString);
+
+    const time = date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    });
+    return time;
+   }
   /* =========================
      ✅ DISABLE SCROLL WHEN MODAL OPEN
   ========================= */
@@ -390,6 +401,37 @@ const LfsPage = () => {
                                                 <div className="border border-gray-300 my-2 p-4">
                                                     <div className="selectedItenaryModalInnerContent">
                                                       <p className="text-[15px] bg-[#eeeeee] py-[2px] px-[10px] border-b border-[#707070]">{segment.operatingCarrier.code} {segment.flightNumber} Aircraft Type {segment.equipment.code}</p>
+                                                    </div>
+                                                    <div className="selectedItenaryModalInnerContentNext py-3">
+                                                      <div className="flex justify-between items-center border-b">
+                                                        <div className="text-center">
+                                                          <p className="text-[14px]">{segment.departure.airportCode}</p>
+                                                        </div>
+                                                        <div className="text-center">
+                                                          <p className="text-[14px]">{segment.arrival.airportCode}</p>
+                                                        </div>
+                                                      </div>
+                                                      <div className='flex justify-between'>
+                                                        <div>
+                                                          {dateReturn(String(segment.departureDateTime))}&nbsp;&nbsp;
+                                                          {timeflightdurationFun(String(segment.departureDateTime))}
+                                                          <p><b><small>{fare.priceClass[0].fareClassType} {fare.priceClass[0].code}</small></b></p>
+                                                        </div>
+                                                        <div>
+                                                          <small>{flightdurationFun(String(segment.flightDuration))}</small>
+                                                        </div>
+                                                        <div className='text-right'>
+                                                          {dateReturn(String(segment.arrivalDateTime))}&nbsp;&nbsp;
+                                                          {timeflightdurationFun(String(segment.arrivalDateTime))}
+                                                          <p><small class="bg-[#e7e7e7] p-1 px-2 rounded">{fare.priceClass[0].fareClassType} {fare.priceClass[0].bookingClass[0]}</small></p>
+                                                          <p><small><b>Fare Basis Code :</b> {fare.metaData.ptc[0].fareBasis[0]}</small></p>
+                                                          <p><small><b>Fare Code :</b> {fare.metaData.ptc[0].fareCode[0]}</small></p>
+                                                        </div>
+                                                      </div>
+                                                      <div>
+                                                        <p><small>Operated By : {segment.operatingCarrier.name} </small></p>
+                                                        <p><small>Terminal : {segment.arrival.terminal ?segment.arrival.terminal : 'N/A'} </small></p>
+                                                      </div>
                                                     </div>
                                                 </div>
                                               </React.Fragment>
